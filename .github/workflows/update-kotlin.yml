@@ -1,0 +1,104 @@
+name: Update Kotlin
+
+on:
+  schedule:
+    - cron: '0 */12 * * *'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Specific kotlin version to update to (leave blank to detect latest release)'
+        required: false
+        type: string
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  update-kotlin:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v30
+
+      - name: Check for new release and update
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+
+          # Set NIX_PATH so Nix commands find the checked out nixpkgs
+          export NIX_PATH="nixpkgs=${GITHUB_WORKSPACE}"
+
+          # Determine target version
+          if [ -n "${INPUT_VERSION:-}" ]; then
+            TARGET_VERSION="${INPUT_VERSION}"
+            echo "Using manually requested version: ${TARGET_VERSION}"
+          else
+            echo "Checking latest release from JetBrains/kotlin..."
+            TARGET_VERSION=$(curl -sSL ${GITHUB_TOKEN:+-H "Authorization: Bearer $GITHUB_TOKEN"} \
+              https://api.github.com/repos/JetBrains/kotlin/releases \
+              | jq -r 'map(select(.prerelease == false and (.tag_name | contains("-RC") or contains("-M") or contains("-Beta") or contains("-dev") | not))) | first | .tag_name | ltrimstr("v")')
+            echo "Latest release found: ${TARGET_VERSION}"
+          fi
+
+          if [ -z "${TARGET_VERSION}" ] || [ "${TARGET_VERSION}" = "null" ]; then
+            echo "Error: Could not determine target kotlin version." >&2
+            exit 1
+          fi
+
+          BRANCH_NAME="update-kotlin-${TARGET_VERSION}"
+
+          # Check if branch already exists on origin (fork)
+          if git ls-remote --exit-code --heads origin "${BRANCH_NAME}" >/dev/null 2>&1; then
+            echo "Branch ${BRANCH_NAME} already exists on remote origin. Skipping update."
+            exit 0
+          fi
+
+          # Set up upstream remote and fetch upstream master
+          echo "Fetching upstream NixOS/nixpkgs master..."
+          git remote add upstream https://github.com/NixOS/nixpkgs.git || git remote set-url upstream https://github.com/NixOS/nixpkgs.git
+          git fetch --depth=1 upstream master
+
+          # Create and switch to new branch based on upstream master
+          git checkout -b "${BRANCH_NAME}" FETCH_HEAD
+
+          # Check current version in upstream nixpkgs
+          CURRENT_VERSION=$(sed -n -E 's/^[[:space:]]*version[[:space:]]*=[[:space:]]*"([^"]+)";/\1/p' pkgs/by-name/ko/kotlin/package.nix)
+          echo "Current version in upstream nixpkgs: ${CURRENT_VERSION}"
+
+          if [ "${CURRENT_VERSION}" = "${TARGET_VERSION}" ]; then
+            echo "Kotlin is already up to date in upstream nixpkgs (${CURRENT_VERSION}). Nothing to do."
+            exit 0
+          fi
+
+          echo "Updating kotlin from ${CURRENT_VERSION} to ${TARGET_VERSION}..."
+
+          # Run the update script with Nix
+          nix-shell -I nixpkgs=. -p curl jq common-updater-scripts --run "update-source-version kotlin \"${TARGET_VERSION}\""
+
+          # Verify changes were made
+          if git diff --quiet pkgs/by-name/ko/kotlin/package.nix; then
+            echo "No changes made to package.nix. Exiting."
+            exit 0
+          fi
+
+          # Build and verify the updated package
+          echo "Building kotlin to verify update..."
+          nix-build . -A kotlin
+          ./result/bin/kotlinc -version
+
+          # Commit and push
+          git config user.name "Subhrajyoti Sen"
+          git config user.email "subhrajyoti12@gmail.com"
+
+          COMMIT_MSG="kotlin: ${CURRENT_VERSION} -> ${TARGET_VERSION}"
+          git add pkgs/by-name/ko/kotlin/package.nix
+          git commit -m "${COMMIT_MSG}"
+          git push origin "${BRANCH_NAME}"
+
+          echo "Successfully updated kotlin to ${TARGET_VERSION} and pushed to ${BRANCH_NAME}."
