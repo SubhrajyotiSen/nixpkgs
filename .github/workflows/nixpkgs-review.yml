@@ -1,0 +1,83 @@
+name: Nixpkgs Review
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: 'Nixpkgs PR number or URL (e.g. 123456 or https://github.com/NixOS/nixpkgs/pull/123456)'
+        required: true
+        type: string
+      system:
+        description: 'System architecture / runner'
+        required: true
+        type: choice
+        default: 'x86_64-linux (ubuntu-latest)'
+        options:
+          - 'x86_64-linux (ubuntu-latest)'
+          - 'aarch64-linux (ubuntu-24.04-arm)'
+      extra_args:
+        description: 'Additional arguments for nixpkgs-review (e.g. --extra-nixpkgs-config "{ allowUnfree = true; }")'
+        required: false
+        default: ''
+        type: string
+      post_result:
+        description: 'Post review result as a comment to the PR'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  review:
+    name: Review PR ${{ inputs.pr }}
+    runs-on: ${{ inputs.system == 'aarch64-linux (ubuntu-24.04-arm)' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 100
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v30
+
+      - name: Run nixpkgs-review
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
+          PR_INPUT: ${{ inputs.pr }}
+          EXTRA_ARGS: ${{ inputs.extra_args }}
+          POST_RESULT: ${{ inputs.post_result }}
+        run: |
+          set -euo pipefail
+
+          export NIX_PATH="nixpkgs=${GITHUB_WORKSPACE}"
+
+          # Extract PR number if full URL or # prefix was provided
+          PR_NUM=$(echo "${PR_INPUT}" | grep -oE '[0-9]+$' || echo "${PR_INPUT}")
+
+          POST_FLAG=""
+          if [ "${POST_RESULT}" = "true" ]; then
+            POST_FLAG="--post-result"
+          fi
+
+          echo "Running nixpkgs-review for PR #${PR_NUM}..."
+          nix-shell -I nixpkgs=. -p nixpkgs-review --run "nixpkgs-review pr ${PR_NUM} --no-shell --print-result ${POST_FLAG} ${EXTRA_ARGS}"
+
+      - name: Add report to Step Summary
+        if: always()
+        run: |
+          REPORT_FILE=$(find ~/.cache/nixpkgs-review -name "report.md" 2>/dev/null | head -n 1 || true)
+          if [ -n "${REPORT_FILE}" ] && [ -f "${REPORT_FILE}" ]; then
+            cat "${REPORT_FILE}" >> "${GITHUB_STEP_SUMMARY}"
+          fi
+
+      - name: Upload review artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nixpkgs-review-${{ inputs.pr }}-${{ runner.arch }}
+          path: ~/.cache/nixpkgs-review
+          if-no-files-found: ignore
