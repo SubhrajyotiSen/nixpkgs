@@ -31,6 +31,9 @@ jobs:
         run: |
           set -euo pipefail
 
+          # Set NIX_PATH so Nix commands find the checked out nixpkgs
+          export NIX_PATH="nixpkgs=${GITHUB_WORKSPACE}"
+
           # Determine target version
           if [ -n "${INPUT_VERSION:-}" ]; then
             TARGET_VERSION="${INPUT_VERSION}"
@@ -76,7 +79,7 @@ jobs:
           echo "Updating maestro from ${CURRENT_VERSION} to ${TARGET_VERSION}..."
 
           # Run the update script with Nix
-          nix-shell -p curl jq common-updater-scripts --run "update-source-version maestro \"${TARGET_VERSION}\""
+          nix-shell -I nixpkgs=. -p curl jq common-updater-scripts --run "update-source-version maestro \"${TARGET_VERSION}\""
 
           # Verify changes were made
           if git diff --quiet pkgs/by-name/ma/maestro/package.nix; then
@@ -86,7 +89,7 @@ jobs:
 
           # Build and verify the updated package
           echo "Building maestro to verify update..."
-          nix-build -A maestro
+          nix-build . -A maestro
           ./result/bin/maestro --version
 
           # Commit and push
