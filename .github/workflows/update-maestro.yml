@@ -1,0 +1,101 @@
+name: Update Maestro
+
+on:
+  schedule:
+    - cron: '0 */12 * * *'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Specific maestro version to update to (leave blank to detect latest release)'
+        required: false
+        type: string
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  update-maestro:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v30
+
+      - name: Check for new release and update
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+
+          # Determine target version
+          if [ -n "${INPUT_VERSION:-}" ]; then
+            TARGET_VERSION="${INPUT_VERSION}"
+            echo "Using manually requested version: ${TARGET_VERSION}"
+          else
+            echo "Checking latest release from mobile-dev-inc/maestro..."
+            TARGET_VERSION=$(curl -sSL ${GITHUB_TOKEN:+-H "Authorization: Bearer $GITHUB_TOKEN"} \
+              https://api.github.com/repos/mobile-dev-inc/maestro/releases \
+              | jq -r 'first(.[].tag_name | ltrimstr("cli-") | select(contains("dev.") | not))')
+            echo "Latest release found: ${TARGET_VERSION}"
+          fi
+
+          if [ -z "${TARGET_VERSION}" ] || [ "${TARGET_VERSION}" = "null" ]; then
+            echo "Error: Could not determine target maestro version." >&2
+            exit 1
+          fi
+
+          BRANCH_NAME="update-maestro-${TARGET_VERSION}"
+
+          # Check if branch already exists on origin (fork)
+          if git ls-remote --exit-code --heads origin "${BRANCH_NAME}" >/dev/null 2>&1; then
+            echo "Branch ${BRANCH_NAME} already exists on remote origin. Skipping update."
+            exit 0
+          fi
+
+          # Set up upstream remote and fetch upstream master
+          echo "Fetching upstream NixOS/nixpkgs master..."
+          git remote add upstream https://github.com/NixOS/nixpkgs.git || git remote set-url upstream https://github.com/NixOS/nixpkgs.git
+          git fetch --depth=1 upstream master
+
+          # Create and switch to new branch based on upstream master
+          git checkout -b "${BRANCH_NAME}" FETCH_HEAD
+
+          # Check current version in upstream nixpkgs
+          CURRENT_VERSION=$(sed -n -E 's/^[[:space:]]*version[[:space:]]*=[[:space:]]*"([^"]+)";/\1/p' pkgs/by-name/ma/maestro/package.nix)
+          echo "Current version in upstream nixpkgs: ${CURRENT_VERSION}"
+
+          if [ "${CURRENT_VERSION}" = "${TARGET_VERSION}" ]; then
+            echo "Maestro is already up to date in upstream nixpkgs (${CURRENT_VERSION}). Nothing to do."
+            exit 0
+          fi
+
+          echo "Updating maestro from ${CURRENT_VERSION} to ${TARGET_VERSION}..."
+
+          # Run the update script with Nix
+          nix-shell -p curl jq common-updater-scripts --run "update-source-version maestro \"${TARGET_VERSION}\""
+
+          # Verify changes were made
+          if git diff --quiet pkgs/by-name/ma/maestro/package.nix; then
+            echo "No changes made to package.nix. Exiting."
+            exit 0
+          fi
+
+          # Build and verify the updated package
+          echo "Building maestro to verify update..."
+          nix-build -A maestro
+          ./result/bin/maestro --version
+
+          # Commit and push
+          git config user.name "Subhrajyoti Sen"
+          git config user.email "subhrajyoti12@gmail.com"
+
+          COMMIT_MSG="maestro: ${CURRENT_VERSION} -> ${TARGET_VERSION}"
+          git add pkgs/by-name/ma/maestro/package.nix
+          git commit -m "${COMMIT_MSG}"
+          git push origin "${BRANCH_NAME}"
+
+          echo "Successfully updated maestro to ${TARGET_VERSION} and pushed to ${BRANCH_NAME}."
