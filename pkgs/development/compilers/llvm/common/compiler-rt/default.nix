@@ -139,9 +139,10 @@ stdenv.mkDerivation (finalAttrs: {
   buildInputs =
     lib.optionals
       # python3 is only used to patch shebangs for helper scripts, only include it if possible
-      (havePython3 && !stdenv.hostPlatform.useLLVM)
+      # Using it in cross-compilation causes infinite recursion through stdenv
+      (havePython3 && !stdenv.hostPlatform.useLLVM && stdenv.hostPlatform == stdenv.buildPlatform)
       [
-        python3 # FIXME: infinite recursion for pkgsLLVM
+        python3
       ]
     ++ lib.optional (stdenv.hostPlatform.isLinux && stdenv.hostPlatform.isRiscV) linuxHeaders
     ++ lib.optional (stdenv.hostPlatform.isFreeBSD) freebsd.include;
@@ -184,12 +185,28 @@ stdenv.mkDerivation (finalAttrs: {
   ++ lib.optionals noSanitizers [
     (lib.cmakeBool "COMPILER_RT_BUILD_SANITIZERS" false)
   ]
-  ++ lib.optionals ((useLLVM && !haveLibcxx) || !haveLibc || bareMetal || isMusl || isDarwinStatic) [
-    (lib.cmakeBool "COMPILER_RT_BUILD_XRAY" false)
-    (lib.cmakeBool "COMPILER_RT_BUILD_LIBFUZZER" false)
-    (lib.cmakeBool "COMPILER_RT_BUILD_MEMPROF" false)
-    (lib.cmakeBool "COMPILER_RT_BUILD_ORC" false) # may be possible to build with musl if necessary
-  ]
+  ++
+    lib.optionals
+      (
+        (useLLVM && !haveLibcxx)
+        || !haveLibc
+        || bareMetal
+        || isMusl
+        || isDarwinStatic
+        # On Darwin, `darwin.libcxx` is the libcxx shipped inside the Apple SDK,
+        # so it is bumped together with the SDK. In libcxx 21 (Apple SDK 26.4+),
+        # the fallbacks for `__builtin_ctzg`/`__builtin_clzg` were removed because
+        # clang 18 support was dropped: https://github.com/llvm/llvm-project/pull/133920
+        # Clang 18 itself doesn't recognize those builtins, so the C++ components
+        # of compiler-rt 18 (which include `<algorithm>` etc.) fail to compile.
+        || (lib.versions.major release_version == "18" && stdenv.hostPlatform.isDarwin)
+      )
+      [
+        (lib.cmakeBool "COMPILER_RT_BUILD_XRAY" false)
+        (lib.cmakeBool "COMPILER_RT_BUILD_LIBFUZZER" false)
+        (lib.cmakeBool "COMPILER_RT_BUILD_MEMPROF" false)
+        (lib.cmakeBool "COMPILER_RT_BUILD_ORC" false) # may be possible to build with musl if necessary
+      ]
   ++ lib.optionals (!haveLibc || bareMetal) [
     (lib.cmakeBool "COMPILER_RT_BUILD_PROFILE" false)
     (lib.cmakeBool "CMAKE_C_COMPILER_WORKS" true)

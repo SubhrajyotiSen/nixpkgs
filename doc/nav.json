@@ -368,6 +368,10 @@
                 {
                   "id": "checkpoint-build",
                   "file": "build-helpers/special/checkpoint-build.section.md"
+                },
+                {
+                  "id": "mkprotonbinderivation",
+                  "file": "build-helpers/special/mkprotonbinderivation.section.md"
                 }
               ]
             },
@@ -456,6 +460,10 @@
                 {
                   "id": "desktop-file-utils",
                   "file": "hooks/desktop-file-utils.section.md"
+                },
+                {
+                  "id": "desktop-to-darwin-bundle",
+                  "file": "hooks/desktop-to-darwin-bundle.md"
                 },
                 {
                   "id": "gdk-pixbuf",
@@ -558,6 +566,10 @@
                   "file": "hooks/pkg-config.section.md"
                 },
                 {
+                  "id": "pkgconfigcheckhook",
+                  "file": "hooks/pkgConfigCheckHook.section.md"
+                },
+                {
                   "id": "postgresql-test-hook",
                   "file": "hooks/postgresql-test-hook.section.md"
                 },
@@ -620,6 +632,10 @@
                 {
                   "id": "xfce4-dev-tools",
                   "file": "hooks/xfce4-dev-tools.section.md"
+                },
+                {
+                  "id": "xtool-build-hook",
+                  "file": "hooks/xtool-build-hook.section.md"
                 }
               ]
             }

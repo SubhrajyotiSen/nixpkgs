@@ -12,8 +12,6 @@ python3Packages.buildPythonApplication (finalAttrs: {
   version = "1.19.6";
   pyproject = true;
 
-  __structuredAttrs = true;
-
   src = fetchFromGitHub {
     owner = "michelcrypt4d4mus";
     repo = "pdfalyzer";
@@ -51,6 +49,7 @@ python3Packages.buildPythonApplication (finalAttrs: {
     ];
     maintainers = with lib.maintainers; [ fab ];
     mainProgram = "pdfalyzer";
-    broken = stdenv.hostPlatform.isDarwin;
+    # DeprecationError breaks the the dependencies check with pypdf 7
+    broken = stdenv.hostPlatform.isDarwin || python3Packages.pypdf.version >= "7.0.0";
   };
 })

@@ -5,24 +5,25 @@
   makeWrapper,
   nix-update-script,
   pkg-config,
+  libgit2,
   openssl,
   rust-jemalloc-sys,
 }:
 
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "hayabusa-sec";
-  version = "4.2.0";
+  version = "4.4.0";
 
   src = fetchFromGitHub {
     owner = "Yamato-Security";
     repo = "hayabusa";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-MaYD3Za0o1bb1SyGRsOLXny0jJfAO16y2VVg6MrjeQI=";
+    hash = "sha256-C5gVxNb5Jn1Eq+5JmzHjGWyAM8jy+ap037dRaIhrVQ4=";
     # Include the hayabusa-rules
     fetchSubmodules = true;
   };
 
-  cargoHash = "sha256-br9gLdVSTL6MoCiRi/TiagzOkangTrCdyRkYrQxKvgw=";
+  cargoHash = "sha256-yoDi/W1+0ayIpYuJKfzl83abQgqGPCC39VXwoR9+YHY=";
 
   nativeBuildInputs = [
     makeWrapper
@@ -30,6 +31,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
   ];
 
   buildInputs = [
+    libgit2
     openssl
     rust-jemalloc-sys # transitive dependency via the hayabusa-evtx crate
   ];

@@ -8,7 +8,7 @@
 }:
 buildGo127Module (finalAttrs: {
   pname = "dux-greeter";
-  version = "2.0.0";
+  version = "2.1.2";
 
   __structuredAttrs = true;
 
@@ -16,7 +16,7 @@ buildGo127Module (finalAttrs: {
     owner = "duxlabs-dev";
     repo = "dux-greeter";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-iUEGxdMLPMrS9sHP0LEWRc5DzyUGZquP+Ds0Eyc1Ibc=";
+    hash = "sha256-U4yhyaRJE1R4RVm3VLIq/zGWrkzuuwGDggT6rQiXRkQ=";
     fetchSubmodules = true;
   };
 

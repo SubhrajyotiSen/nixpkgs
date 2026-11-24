@@ -5,11 +5,14 @@
   fetchFromGitHub,
 
   # buildInputs
+  aws-lc,
   rust-jemalloc-sys,
+  zstd,
 
   # nativeBuildInputs
   installShellFiles,
   makeBinaryWrapper,
+  pkg-config,
 
   buildPackages,
   versionCheckHook,
@@ -19,25 +22,28 @@
 
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "uv";
-  version = "0.13.5";
+  version = "0.13.9";
   __structuredAttrs = true;
 
   src = fetchFromGitHub {
     owner = "astral-sh";
     repo = "uv";
     tag = finalAttrs.version;
-    hash = "sha256-SXTusm2EJ49tk03c3vSHcZp3AtAuj9SGOzsMwpnjXDw=";
+    hash = "sha256-D+NUKgwVCfsc8t4egZ7Tq8pjqHm0vYlJbqnH7D1I0ZU=";
   };
 
-  cargoHash = "sha256-spQmSFAjNs6pWnw2nd/d3ZysIMK9j+BjDjrwcnUCmWw=";
+  cargoHash = "sha256-nmUByTBYI4dzj+ohszZ3x8jOb5yacMInAPnP5Fn2zOA=";
 
   buildInputs = [
+    aws-lc
     rust-jemalloc-sys
+    zstd
   ];
 
   nativeBuildInputs = [
     installShellFiles
     makeBinaryWrapper
+    pkg-config
   ];
 
   cargoBuildFlags = [

@@ -34,6 +34,18 @@ stdenv.mkDerivation {
   buildPhase = ''
     runHook preBuild
     for d in *; do
+      if [ $d == raylife ]; then
+        ${
+          # raylife only has a Linux-specific lowercase makefile, which
+          # this test also finds on case-insensitive filesystems such as
+          # macOS's
+          lib.optionalString stdenv.hostPlatform.isDarwin ''
+            continue
+          ''
+        }
+        mv raylife/src/makefile raylife/src/Makefile
+      fi
+
       if [ -f $d/src/Makefile ]; then
         make -C $d/src
       fi
@@ -53,7 +65,8 @@ stdenv.mkDerivation {
     runHook postInstall
   '';
 
-  passthru.updateScript = nix-update-script { };
+  # Upstream has no tags
+  passthru.updateScript = nix-update-script { extraArgs = [ "--version=branch" ]; };
 
   meta = {
     description = "Collection of games made with raylib";

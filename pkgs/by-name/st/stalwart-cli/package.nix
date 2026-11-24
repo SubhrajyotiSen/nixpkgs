@@ -3,23 +3,40 @@
   cacert,
   fetchFromGitHub,
   rustPlatform,
+  pkg-config,
+  aws-lc,
   versionCheckHook,
 }:
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "stalwart-cli";
-  version = "1.0.14";
+  version = "2.0.0";
+
   src = fetchFromGitHub {
     owner = "stalwartlabs";
     repo = "cli";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-3SotRkEDIrI3hgYFjAkkKhCZoD/woXreLshBaLr0Y2c=";
+    hash = "sha256-b6HnJ791zZHD8Udave71lig/YFIy4r57p/WXwW0ZeXU=";
   };
-  cargoHash = "sha256-/vYb083UVPDZQpDWh16XkMWk+n9081OiV9S1i1om5zQ=";
+
+  cargoHash = "sha256-tTsPfUXNyc06v3Pw1b0/AgqsPdM02Wlb7lODKzu49V4=";
+
   __structuredAttrs = true;
+
+  nativeBuildInputs = [
+    pkg-config
+  ];
+
+  buildInputs = [
+    aws-lc
+  ];
+
   # `Result::unwrap()` on an `Err` value: Network(reqwest::Error { kind: Builder, source: General("No CA certificates were loaded from the system") })
   nativeCheckInputs = [ cacert ];
+
   doInstallCheck = true;
+
   nativeInstallCheckInputs = [ versionCheckHook ];
+
   meta = {
     description = "Stalwart Command Line Interface";
     longDescription = ''

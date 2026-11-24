@@ -8,6 +8,7 @@
   npmHooks,
   fetchNpmDeps,
   pkg-config,
+  aws-lc,
   webkitgtk_4_1,
   libayatana-appindicator,
   libxscrnsaver,
@@ -20,7 +21,7 @@
 
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "fluux-messenger";
-  version = "0.18.1";
+  version = "0.18.3";
   __structuredAttrs = true;
 
   src = fetchFromGitHub {
@@ -28,13 +29,13 @@ rustPlatform.buildRustPackage (finalAttrs: {
     owner = "processone";
     repo = "fluux-messenger";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-3hOe7pEs9QMuAX4K3SGrDRFIjpWK4PEsR3KuQVbGr9Y=";
+    hash = "sha256-+CkcqoZ6COI0OFsuWtbOpSUeC76ct76UgK0umffyCG0=";
   };
 
   npmDeps = fetchNpmDeps {
     name = "${finalAttrs.pname}-${finalAttrs.version}-npm-deps";
     inherit (finalAttrs) src;
-    hash = "sha256-mKGzLzgMtdY09x/pHBd1R1HZbUccofl1Ho0xE1hYuMw=";
+    hash = "sha256-Vzc4EnJFtqh+fDLh4DHtXbt7syIViUHOLnTeIZKOIgs=";
   };
 
   cargoRoot = "apps/fluux/src-tauri";
@@ -48,13 +49,14 @@ rustPlatform.buildRustPackage (finalAttrs: {
   ''
   + lib.optionalString stdenv.hostPlatform.isDarwin ''
     substituteInPlace ${finalAttrs.cargoRoot}/tauri.macos.conf.json \
-      --replace-fail 'node scripts/tauri-macos-share.mjs' 'node apps/fluux/scripts/tauri-macos-share.mjs'
+      --replace-fail 'node scripts/tauri-macos-share.mjs' 'node apps/fluux/scripts/tauri-macos-share.mjs' \
+      --replace-fail 'node scripts/tauri-macos-widgets.mjs' 'node apps/fluux/scripts/tauri-macos-widgets.mjs'
     substituteInPlace apps/fluux/scripts/tauri-macos-share.mjs \
       --replace-fail "run('/usr/bin/xcrun', ['swiftc'," "run('swiftc', [" \
       --replace-fail "run('/usr/bin/xcrun', ['lipo'," "run('lipo', ["
   '';
 
-  cargoHash = "sha256-BEhToIykuf4ZMHlYETzZ3hdaVcjbp25FLSflLawcj6s=";
+  cargoHash = "sha256-bkNAKJ6a0gMP+Ds02SqnNzG8RHAtzFnoxEcmoFsI6AY=";
 
   nativeBuildInputs = [
     cargo-tauri.hook
@@ -68,7 +70,10 @@ rustPlatform.buildRustPackage (finalAttrs: {
     autoPatchelfHook
   ];
 
-  buildInputs = lib.optionals stdenv.hostPlatform.isLinux [
+  buildInputs = [
+    aws-lc
+  ]
+  ++ lib.optionals stdenv.hostPlatform.isLinux [
     webkitgtk_4_1
     libayatana-appindicator
     libxscrnsaver

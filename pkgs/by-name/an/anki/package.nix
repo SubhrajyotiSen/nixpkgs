@@ -9,8 +9,13 @@
   lame,
   mpv-unwrapped,
   ninja,
+  pkg-config,
+  sqlite,
+  zstd,
   callPackage,
   nixosTests,
+  nix-update-script,
+  _experimental-update-script-combinators,
   nodejs,
   jq,
   protobuf_31,
@@ -38,11 +43,11 @@ let
   python = python3;
 
   pname = "anki";
-  version = "26.09.3";
+  version = "26.09.4";
   rev = "29bb700b951e3f0c0cb69b77c0180fc1fe33e6ba";
 
-  srcHash = "sha256-N55F8dDDRrCmA8GYP2QtfNs6QQrKhY7D2+yJO+4pqss=";
-  cargoHash = "sha256-2atsCtbtS+0T1h+KqUXI3aGHJFQbQsIaCXSi5KFUz5E=";
+  srcHash = "sha256-T2bDhOHnP2cZQdzZqXvuCK+LwNzWAZsBZcHxVWNvlXU=";
+  cargoHash = "sha256-WWulJOXZU7xxeVgznN1vrELjz7SK+c3nVKMPpOuyRXc=";
   yarnHash = "sha256-jjTN/jd9UgNefkFtIZ9RT9oGyxNlAO3WlMNHzjnlOCM=";
   pythonDeps =
     with python.pkgs;
@@ -93,6 +98,7 @@ let
       referencing
       rpds-py
       soupsieve
+      tomlkit
       urllib3
       werkzeug
     ]
@@ -182,6 +188,7 @@ python.pkgs.buildPythonApplication (finalAttrs: {
     installShellFiles
     jq
     ninja
+    pkg-config
     nodejs
     python.pkgs.mypy-protobuf
     qt6.wrapQtAppsHook
@@ -196,6 +203,8 @@ python.pkgs.buildPythonApplication (finalAttrs: {
   ++ lib.optional stdenv.hostPlatform.isLinux wrapGAppsHook3;
 
   buildInputs = [
+    sqlite
+    zstd
     qt6.qtbase
     qt6.qtmultimedia
     qt6.qtsvg
@@ -353,6 +362,10 @@ python.pkgs.buildPythonApplication (finalAttrs: {
     inherit python;
     withAddons = ankiAddons: callPackage ./with-addons.nix { inherit ankiAddons; };
     tests.anki-sync-server = nixosTests.anki-sync-server;
+    updateScript = _experimental-update-script-combinators.sequence [
+      (nix-update-script { })
+      python.pkgs.anki-mac-helper.updateScript
+    ];
   };
 
   meta = {

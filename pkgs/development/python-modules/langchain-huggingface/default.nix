@@ -35,7 +35,6 @@ buildPythonPackage (finalAttrs: {
   pname = "langchain-huggingface";
   version = "1.2.3";
   pyproject = true;
-  __structuredAttrs = true;
 
   src = fetchFromGitHub {
     owner = "langchain-ai";
@@ -51,6 +50,7 @@ buildPythonPackage (finalAttrs: {
   pythonRelaxDeps = [
     # Upper bound dropped upstream: https://github.com/langchain-ai/langchain/pull/41407
     "huggingface-hub"
+    "langchain-core"
   ];
   dependencies = [
     huggingface-hub

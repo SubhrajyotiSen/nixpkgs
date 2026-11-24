@@ -5,6 +5,7 @@
   dpkg,
   undmg,
   autoPatchelfHook,
+  patchelfUnstable,
   wrapGAppsHook3,
   alsa-lib,
   gtk3,
@@ -51,6 +52,7 @@ stdenv.mkDerivation {
     lib.optionals stdenv.hostPlatform.isLinux [
       dpkg
       autoPatchelfHook
+      patchelfUnstable
       wrapGAppsHook3
     ]
     ++ lib.optionals stdenv.hostPlatform.isDarwin [
@@ -76,6 +78,13 @@ stdenv.mkDerivation {
 
   runtimeDependencies = lib.optionals stdenv.hostPlatform.isLinux [
     libayatana-appindicator
+  ];
+
+  # Microsoft.AI.Foundry.Local.Core.so dlopen()s libssl; its RUNPATH is only $ORIGIN,
+  # and autoPatchelf replaces it, so re-add $ORIGIN for the bundled libonnxruntime.so.
+  appendRunpaths = lib.optionals stdenv.hostPlatform.isLinux [
+    "$ORIGIN"
+    "${lib.getLib openssl_3_5}/lib"
   ];
 
   dontStrip = true;

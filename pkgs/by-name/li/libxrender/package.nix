@@ -53,11 +53,13 @@ stdenv.mkDerivation (finalAttrs: {
     tests.pkg-config = testers.testMetaPkgConfig finalAttrs.finalPackage;
   };
 
+  __structuredAttrs = true;
+
   meta = {
     description = "Xlib library for the Render Extension to the X11 protocol";
     homepage = "https://gitlab.freedesktop.org/xorg/lib/libxrender";
     license = lib.licenses.hpndSellVariant;
-    maintainers = [ ];
+    maintainers = [ lib.maintainers.smakarov ];
     pkgConfigModules = [ "xrender" ];
     platforms = lib.platforms.unix;
   };

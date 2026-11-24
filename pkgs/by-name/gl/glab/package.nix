@@ -13,7 +13,7 @@
 
 buildGo127Module (finalAttrs: {
   pname = "glab";
-  version = "1.126.0";
+  version = "1.130.0";
 
   __structuredAttrs = true;
 
@@ -21,26 +21,17 @@ buildGo127Module (finalAttrs: {
     owner = "gitlab-org";
     repo = "cli";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-Lzp0up2KJTrBQTMuEl3neV+ty1RM5ZGgLgPAfIl16C0=";
-    leaveDotGit = true;
-    postFetch = ''
-      cd "$out"
-      git rev-parse --short HEAD > $out/COMMIT
-      find "$out" -name .git -print0 | xargs -0 rm -rf
-    '';
+    hash = "sha256-9miIOYrUvUfvB6//j/gV19Sn85CCBkSAcY/cZ5sXO0I=";
   };
 
-  vendorHash = "sha256-8JesLR9Wg2uMDfdhw6FhvGgoJQ7oMCCDzb6Paag2qjs=";
+  vendorHash = "sha256-4Ate/Cm5gLoEjm9nEm6I7GHfQZjygalbhPiOrxYpDf8=";
 
   ldflags = [
     "-s"
     "-w"
     "-X main.version=${finalAttrs.version}"
+    "-X main.commit=${finalAttrs.src.rev}"
   ];
-
-  preBuild = ''
-    ldflags+=" -X main.commit=$(cat COMMIT)"
-  '';
 
   nativeBuildInputs = [
     installShellFiles

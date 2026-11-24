@@ -4,6 +4,7 @@
   archinfo,
   buildPythonPackage,
   cachetools,
+  callPackage,
   capstone,
   cargo,
   cffi,
@@ -47,8 +48,7 @@
 buildPythonPackage (finalAttrs: {
   pname = "angr";
   # Keep angr-management, angr, archinfo, cle, and pyvex in sync.
-  # nixpkgs-update: no auto update
-  version = "10.0.4";
+  version = "10.0.7";
   pyproject = true;
 
   disabled = pythonOlder "3.12";
@@ -57,17 +57,19 @@ buildPythonPackage (finalAttrs: {
     owner = "angr";
     repo = "angr";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-7XPOH5kGpSychDk17jBz7jK7nv9zRsy+dPWaCYCNx50=";
+    hash = "sha256-/XiRMh60Mji4XKVMKG3lbL87tepR3c553E6BjW78Es8=";
   };
 
   cargoDeps = rustPlatform.fetchCargoVendor {
     inherit (finalAttrs) src pname version;
-    hash = "sha256-kVDd3sXTyGZPPXg5rFZZqfC3UNqq6AxxHoZdhzMBKyo=";
+    hash = "sha256-EC14fYJHvRizizv2dPaiCJNUo90ief9ohqozoZweaaw=";
   };
 
   pythonRelaxDeps = [
     "cxxheaderparser"
     "lmdb"
+    "pycparser"
+    "pypcode"
     "z3-solver"
   ];
 
@@ -148,10 +150,14 @@ buildPythonPackage (finalAttrs: {
     "pyvex"
   ];
 
+  passthru.updateScript = {
+    command = [ (lib.getExe (callPackage ./update.nix { })) ];
+    supportedFeatures = [ "commit" ];
+  };
+
   passthru.tests.smoke =
     runCommandCC "angr-smoke-test"
       {
-        __structuredAttrs = true;
         nativeBuildInputs = [
           (python.withPackages (_: [
             finalAttrs.finalPackage

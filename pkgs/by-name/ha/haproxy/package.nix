@@ -25,20 +25,25 @@ assert lib.assertOneOf "sslLibrary" sslLibrary [
 let
   sslPkgs = {
     inherit
-      aws-lc
       libressl
       openssl
       ;
+    aws-lc = aws-lc.override {
+      # HAProxy wants to link against -lssl and -lcrypto
+      withOpenSSLShim = true;
+      # HAProxy gets confused with symbol prefixing enabled
+      symbolPrefix = null;
+    };
   };
   sslPkg = sslPkgs.${sslLibrary};
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "haproxy";
-  version = "3.4.7";
+  version = "3.4.8";
 
   src = fetchurl {
     url = "https://www.haproxy.org/download/${lib.versions.majorMinor finalAttrs.version}/src/haproxy-${finalAttrs.version}.tar.gz";
-    hash = "sha256-zP00Lzckws1llXQETXiPROILISRnxr1e27/FF6J3Xco=";
+    hash = "sha256-AkvVIabLvjK0JoUxR+a71qibEHxaNBRIRhk/7lt8btE=";
   };
 
   buildInputs = [

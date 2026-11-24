@@ -8,16 +8,14 @@
 
 python3Packages.buildPythonApplication (finalAttrs: {
   pname = "prowler";
-  version = "5.47.0";
+  version = "5.51.0";
   pyproject = true;
-
-  __structuredAttrs = true;
 
   src = fetchFromGitHub {
     owner = "prowler-cloud";
     repo = "prowler";
     tag = finalAttrs.version;
-    hash = "sha256-vY/ZwWP1UVF2MdnfwQdu6SVhHh9ehOdYvak0FYv8jrI=";
+    hash = "sha256-NLhsL5DuO/pHxfWlp7phNP5XHQ80O7OyiwLA6GpWcj8=";
   };
 
   postPatch = ''
@@ -116,6 +114,7 @@ python3Packages.buildPythonApplication (finalAttrs: {
     pygithub
     python-dateutil
     pytz
+    regex
     scaleway
     schema
     shodan

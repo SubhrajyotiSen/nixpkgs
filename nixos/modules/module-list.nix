@@ -40,6 +40,7 @@
   ./config/users-groups.nix
   ./config/vte.nix
   ./config/xdg/autostart.nix
+  ./config/xdg/directories.nix
   ./config/xdg/icons.nix
   ./config/xdg/menus.nix
   ./config/xdg/mime.nix
@@ -184,6 +185,7 @@
   ./programs/bazecor.nix
   ./programs/bcc.nix
   ./programs/benchexec.nix
+  ./programs/brave.nix
   ./programs/browserpass.nix
   ./programs/btrfs-heatmap.nix
   ./programs/calls.nix
@@ -306,6 +308,7 @@
   ./programs/oddjobd.nix
   ./programs/onlyoffice.nix
   ./programs/opengamepadui.nix
+  ./programs/openlogi.nix
   ./programs/openvpn3.nix
   ./programs/partition-manager.nix
   ./programs/passless.nix
@@ -398,6 +401,7 @@
   ./programs/xscreensaver/sonar.nix
   ./programs/xscreensaver/xscreensaver.nix
   ./programs/xss-lock.nix
+  ./programs/xtool.nix
   ./programs/xwayland.nix
   ./programs/yazi.nix
   ./programs/ydotool.nix
@@ -571,6 +575,7 @@
   ./services/databases/kvrocks.nix
   ./services/databases/lldap.nix
   ./services/databases/memcached.nix
+  ./services/databases/memgraph.nix
   ./services/databases/monetdb.nix
   ./services/databases/mongodb.nix
   ./services/databases/mysql.nix
@@ -662,11 +667,11 @@
   ./services/display-managers/lemurs.nix
   ./services/display-managers/ly.nix
   ./services/display-managers/noctalia-greeter.nix
+  ./services/display-managers/phrog.nix
   ./services/display-managers/plasma-login-manager.nix
   ./services/display-managers/regreet.nix
   ./services/display-managers/sddm.nix
   ./services/editors/emacs.nix
-  ./services/editors/haste.nix
   ./services/editors/infinoted.nix
   ./services/finance/libeufin/bank.nix
   ./services/finance/libeufin/module.nix
@@ -693,7 +698,6 @@
   ./services/hardware/actkbd.nix
   ./services/hardware/amdgpu.nix
   ./services/hardware/argonone.nix
-  ./services/hardware/arsenik.nix
   ./services/hardware/asusd.nix
   ./services/hardware/auto-cpufreq.nix
   ./services/hardware/auto-epp.nix
@@ -721,6 +725,7 @@
   ./services/hardware/iptsd.nix
   ./services/hardware/irqbalance.nix
   ./services/hardware/joycond.nix
+  ./services/hardware/kanata-config-aekeynox.nix
   ./services/hardware/kanata.nix
   ./services/hardware/keyd.nix
   ./services/hardware/kmonad.nix
@@ -808,7 +813,6 @@
   ./services/mail/davmail.nix
   ./services/mail/dkimproxy-out.nix
   ./services/mail/dovecot.nix
-  ./services/mail/dspam.nix
   ./services/mail/exim.nix
   ./services/mail/goeland.nix
   ./services/mail/listmonk.nix
@@ -878,6 +882,7 @@
   ./services/misc/beanstalkd.nix
   ./services/misc/bees.nix
   ./services/misc/bepasty.nix
+  ./services/misc/bifrost.nix
   ./services/misc/blenderfarm.nix
   ./services/misc/calibre-server.nix
   ./services/misc/canto-daemon.nix
@@ -942,6 +947,7 @@
   ./services/misc/irkerd.nix
   ./services/misc/jackett.nix
   ./services/misc/jellyfin.nix
+  ./services/misc/jellystat.nix
   ./services/misc/kiwix-serve.nix
   ./services/misc/klipper.nix
   ./services/misc/languagetool.nix
@@ -956,6 +962,7 @@
   ./services/misc/mbpfan.nix
   ./services/misc/mediatomb.nix
   ./services/misc/memos.nix
+  ./services/misc/mesh-llm.nix
   ./services/misc/metabase.nix
   ./services/misc/minuspod.nix
   ./services/misc/mollysocket.nix
@@ -982,6 +989,8 @@
   ./services/misc/packagekit.nix
   ./services/misc/paisa.nix
   ./services/misc/paperless.nix
+  ./services/misc/pelican-panel.nix
+  ./services/misc/pelican-wings.nix
   ./services/misc/persistent-evdev.nix
   ./services/misc/pinchflat.nix
   ./services/misc/pinnwand.nix
@@ -1382,7 +1391,6 @@
   ./services/networking/ngircd.nix
   ./services/networking/nix-serve.nix
   ./services/networking/nix-store-gcs-proxy.nix
-  ./services/networking/nixops-dns.nix
   ./services/networking/nm-file-secret-agent.nix
   ./services/networking/nmtrust.nix
   ./services/networking/nncp.nix
@@ -1398,6 +1406,7 @@
   ./services/networking/nullidentdmod.nix
   ./services/networking/nylon.nix
   ./services/networking/ocserv.nix
+  ./services/networking/odhcpd.nix
   ./services/networking/ofono.nix
   ./services/networking/oidentd.nix
   ./services/networking/oink.nix
@@ -1518,7 +1527,6 @@
   ./services/networking/vwifi.nix
   ./services/networking/webhook.nix
   ./services/networking/websockify.nix
-  ./services/networking/wg-access-server.nix
   ./services/networking/wg-netmanager.nix
   ./services/networking/wg-quick.nix
   ./services/networking/wgautomesh.nix
@@ -1553,7 +1561,6 @@
   ./services/scheduling/gocron.nix
   ./services/scheduling/prefect.nix
   ./services/scheduling/scx-loader.nix
-  ./services/scheduling/scx.nix
   ./services/search/elasticsearch-curator.nix
   ./services/search/elasticsearch.nix
   ./services/search/hound.nix
@@ -1581,6 +1588,7 @@
   ./services/security/endlessh.nix
   ./services/security/esdm.nix
   ./services/security/fail2ban.nix
+  ./services/security/falco.nix
   ./services/security/fprintd.nix
   ./services/security/haveged.nix
   ./services/security/hockeypuck.nix
@@ -1626,6 +1634,7 @@
   ./services/security/warpgate.nix
   ./services/security/yubikey-agent.nix
   ./services/system/automatic-timezoned.nix
+  ./services/system/bootvine.nix
   ./services/system/bpftune.nix
   ./services/system/cachix-agent/default.nix
   ./services/system/cachix-watch-store.nix
@@ -1728,6 +1737,7 @@
   ./services/web-apps/feishin.nix
   ./services/web-apps/fider.nix
   ./services/web-apps/filebrowser.nix
+  ./services/web-apps/filesender.nix
   ./services/web-apps/firefly-iii-data-importer.nix
   ./services/web-apps/firefly-iii.nix
   ./services/web-apps/flame.nix
@@ -1736,10 +1746,12 @@
   ./services/web-apps/freescout.nix
   ./services/web-apps/freshrss.nix
   ./services/web-apps/froide-govplan.nix
+  ./services/web-apps/galene-stt.nix
   ./services/web-apps/galene.nix
   ./services/web-apps/gancio.nix
   ./services/web-apps/geoserver.nix
   ./services/web-apps/gerrit.nix
+  ./services/web-apps/ghostfolio.nix
   ./services/web-apps/glance.nix
   ./services/web-apps/glitchtip.nix
   ./services/web-apps/go-httpbin.nix
@@ -1749,6 +1761,7 @@
   ./services/web-apps/goupile.nix
   ./services/web-apps/grav.nix
   ./services/web-apps/greenlight.nix
+  ./services/web-apps/grimmory.nix
   ./services/web-apps/grist.nix
   ./services/web-apps/grocy.nix
   ./services/web-apps/guacamole-client.nix
@@ -1822,6 +1835,7 @@
   ./services/web-apps/nostr-rs-relay.nix
   ./services/web-apps/ocis.nix
   ./services/web-apps/olivetin.nix
+  ./services/web-apps/omniroute.nix
   ./services/web-apps/oncall.nix
   ./services/web-apps/onlyoffice.nix
   ./services/web-apps/open-web-calendar.nix
@@ -1863,7 +1877,6 @@
   ./services/web-apps/screego.nix
   ./services/web-apps/selfoss.nix
   ./services/web-apps/sftpgo.nix
-  ./services/web-apps/sharkey.nix
   ./services/web-apps/shiori.nix
   ./services/web-apps/sillytavern.nix
   ./services/web-apps/silverbullet.nix

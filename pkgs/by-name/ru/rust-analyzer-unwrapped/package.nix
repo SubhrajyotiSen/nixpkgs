@@ -15,15 +15,15 @@
 
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "rust-analyzer-unwrapped";
-  version = "2026-10-26";
+  version = "2026-11-16";
 
-  cargoHash = "sha256-pvUF1JqpENYc/p5CHoTZ8RKhIBEQnebmbwd5H2s8oYk=";
+  cargoHash = "sha256-cHPXHEzpv7/2FvXBpqGeOU2KGVrDLJl/Jp1TO/dgcKw=";
 
   src = fetchFromGitHub {
     owner = "rust-lang";
     repo = "rust-analyzer";
     rev = finalAttrs.version;
-    hash = "sha256-3/DMV3Lpmthk6OV2b7bJSJ5Okouyvl755YZENyLwllo=";
+    hash = "sha256-HkesLRySfo08Om/dXxsmlfUDMmPBBhaG+C0YIMKFjag=";
   };
 
   cargoBuildFlags = [
@@ -76,10 +76,12 @@ rustPlatform.buildRustPackage (finalAttrs: {
   meta = {
     description = "Language server for the Rust language";
     homepage = "https://rust-analyzer.github.io";
-    license = with lib.licenses; [
-      mit
-      asl20
-    ];
+    license =
+      with lib.licenses;
+      OR [
+        mit
+        asl20
+      ];
     maintainers = with lib.maintainers; [
       diogotcorreia
       oxalica

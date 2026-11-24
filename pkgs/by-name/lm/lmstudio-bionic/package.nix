@@ -7,12 +7,12 @@
 let
   pname = "lmstudio-bionic";
 
-  version_aarch64-darwin = "1.1.9-6";
-  hash_aarch64-darwin = "sha256-hPpmtikwKj2hYUuDl7wtw0QIRXHUJspoWvSuNS7BPDg=";
-  version_x86_64-linux = "1.1.9-6";
-  hash_x86_64-linux = "sha256-I8/UNRlQXa0GQcYebbvI2uER85obNjO2wgSstvNiYZU=";
-  version_aarch64-linux = "1.1.9-6";
-  hash_aarch64-linux = "sha256-cgWnLvEWuuc7Ltb1zfO1zbAhWjTNP8Cw4ieJTzRiQbU=";
+  version_aarch64-darwin = "1.2.2-3";
+  hash_aarch64-darwin = "sha256-8TiUOb2AY9LLCeAywL4zq8jPW7zbN2TrLmMWsgSLswI=";
+  version_x86_64-linux = "1.2.2-3";
+  hash_x86_64-linux = "sha256-KjGPifqlxw/T+RzyDbMpDOQhG8gaYEQKcKXZln+aW70=";
+  version_aarch64-linux = "1.2.2-3";
+  hash_aarch64-linux = "sha256-NpkL2OXww3g4LNgRbYabDOcQY92YHvFHbn7XT+swsHA=";
 
   meta = {
     description = "Bionic is an easy to use desktop app for experimenting with local and open-source Large Language Models (LLMs)";

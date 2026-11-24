@@ -6,16 +6,16 @@
 
 buildNpmPackage (finalAttrs: {
   pname = "influxdb-mcp-server";
-  version = "0.3.0";
+  version = "0.4.1";
 
   src = fetchFromGitHub {
     owner = "idoru";
     repo = "influxdb-mcp-server";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-NhriEWGByyaePcxeRE0+dPxpgYSfRj2Z5FodC956y+E=";
+    hash = "sha256-iAMTphvC/lLhOWC6j3WhMaxZL9x5RgsLBGNJ3RvD/2c=";
   };
 
-  npmDepsHash = "sha256-tdHNWu7zCN28OKnCBbnfe/Bb2btFdXYtplAllA6ZpGo=";
+  npmDepsHash = "sha256-CLFDfljtmL0dNI/qOzZiooFlr5fF+lHaCy/i+OTjgN8=";
 
   dontNpmBuild = true;
 

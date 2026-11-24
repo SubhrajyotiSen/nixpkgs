@@ -30,13 +30,13 @@ backendStdenv.mkDerivation (finalAttrs: {
   # NOTE: Depends on the CUDA package set, so use cudaNamePrefix.
   name = "${cudaNamePrefix}-${finalAttrs.pname}-${finalAttrs.version}";
   pname = "nvimgcodec";
-  version = "0.9.0";
+  version = "0.10.1";
 
   src = fetchFromGitHub {
     owner = "NVIDIA";
     repo = "nvImageCodec";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-25IlghY8r2ZyUSwptJrwFp+8WluLdZr6P3AgR5FY3xw=";
+    hash = "sha256-7ROY34GLX9N2e1DdvbuNxIcFuvh6K+LaHEHWDAFycus=";
   };
 
   # Use the NVTX and Boost.Preprocessor headers of Nixpkgs instead of the submodules (external/NVTX and

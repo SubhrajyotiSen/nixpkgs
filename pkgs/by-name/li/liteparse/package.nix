@@ -4,6 +4,7 @@
   rustPlatform,
   fetchFromGitHub,
   fetchurl,
+  aws-lc,
   cmake,
   makeWrapper,
   nix-update-script,
@@ -13,6 +14,7 @@
   writableTmpDirAsHomeHook,
   leptonica,
   tesseract,
+  zstd,
 }:
 
 let
@@ -64,14 +66,14 @@ let
 in
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "liteparse";
-  version = "2.17.0";
+  version = "2.18.0";
   __structuredAttrs = true;
 
   src = fetchFromGitHub {
     owner = "run-llama";
     repo = "liteparse";
     tag = "crates-v${finalAttrs.version}";
-    hash = "sha256-46q3sGRM37lgmQ7GiVXwIhUR/Do08fwRXCU7UJNEuMc=";
+    hash = "sha256-Wx3M6IQeQG0NrrW/XgcfDiLvXP+AU6kf+47X+DgpnUw=";
   };
 
   postPatch = ''
@@ -102,11 +104,13 @@ rustPlatform.buildRustPackage (finalAttrs: {
   ];
 
   buildInputs = [
+    aws-lc
     openssl
     tesseract
+    zstd
   ];
 
-  cargoHash = "sha256-eD96m1HRiC25+muqUZNPybloOUYbBE2+JQWHXKiTe+s=";
+  cargoHash = "sha256-YjSQDsbvq5tCBi/tO6WhYiqTlkrhztw/X8mWkhLyey8=";
   cargoBuildFlags = [
     "--package"
     "liteparse"

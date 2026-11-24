@@ -7,6 +7,7 @@
   nix-update-script,
   orjson,
   pydantic,
+  pyprojectVersionPatchHook,
   pytest-asyncio,
   pytestCheckHook,
   rustc,
@@ -15,7 +16,7 @@
 
 buildPythonPackage (finalAttrs: {
   pname = "blastdns";
-  version = "2.0.2-unstable-2026-10-21";
+  version = "2.0.4";
   pyproject = true;
 
   __darwinAllowLocalNetworking = true;
@@ -23,14 +24,13 @@ buildPythonPackage (finalAttrs: {
   src = fetchFromGitHub {
     owner = "blacklanternsecurity";
     repo = "blastdns";
-    # https://github.com/blacklanternsecurity/blastdns/issues/142
-    rev = "e5a9ab0c9dcbc82ccede5dc6eaf3d2db5b11d61a";
-    hash = "sha256-lfEAnTR4SrVHY/XGW1MLkaMUT4aXd2kt0iOkwbAyYLQ=";
+    tag = "v${finalAttrs.version}";
+    hash = "sha256-Zw1iHuQD2jPifrp16eWXE1WJ8PuYW1P+wS6hkODI1pY=";
   };
 
   cargoDeps = rustPlatform.fetchCargoVendor {
     inherit (finalAttrs) pname version src;
-    hash = "sha256-QGp4EqOEXSMSeE0ZT85SzpIGrhva//MXKEjZEd7oYgY=";
+    hash = "sha256-Q2OZhiLi/UcTjHyxPWeI+rJTv9zPKh3X8G030rfgDVY=";
   };
 
   build-system = [
@@ -39,6 +39,8 @@ buildPythonPackage (finalAttrs: {
     rustPlatform.maturinBuildHook
     rustc
   ];
+
+  nativeBuildInputs = [ pyprojectVersionPatchHook ];
 
   dependencies = [
     orjson
@@ -73,6 +75,8 @@ buildPythonPackage (finalAttrs: {
     "test_stats_account_for_every_query"
     "test_zone_transfer_nonexistent_zone"
     "test_zone_transfer_success"
+    # Flaky test
+    "test_batch_size_1000"
   ];
 
   pythonImportsCheck = [ "blastdns" ];

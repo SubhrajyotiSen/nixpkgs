@@ -185,6 +185,7 @@
       "samuela": 226872
     },
     "members": {
+      "81reap": 20740005,
       "ethancedwards8": 60861925
     },
     "name": "cuda-maintainers"
@@ -431,6 +432,7 @@
       "karstx": 498906,
       "liamthexpl0rer": 119797945,
       "liberodark": 4238928,
+      "philocalyst": 114884788,
       "qubitnano": 146656568,
       "yvnth": 201552597
     },
@@ -498,6 +500,7 @@
       "kalbasit": 87115
     },
     "members": {
+      "GraysonTinker": 146041509,
       "mfrw": 4929861
     },
     "name": "golang"
@@ -948,7 +951,9 @@
     "members": {
       "dramforever": 2818072,
       "fgaz": 8182846,
-      "jonhermansen": 660911
+      "jonhermansen": 660911,
+      "ju1m": 21160136,
+      "liberodark": 4238928
     },
     "name": "RISC-V"
   },
@@ -1065,7 +1070,7 @@
     "name": "systemd"
   },
   "tenstorrent": {
-    "description": "Maintain Tenstorrent-related packages ",
+    "description": "Maintain Tenstorrent-related packages",
     "id": 19876744,
     "maintainers": {
       "RossComputerGuy": 19699320,

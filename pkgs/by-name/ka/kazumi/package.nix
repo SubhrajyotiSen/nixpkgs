@@ -1,7 +1,7 @@
 {
   lib,
   stdenv,
-  flutter,
+  flutter347,
   fetchurl,
   fetchFromGitHub,
   autoPatchelfHook,
@@ -25,13 +25,13 @@
 }:
 
 let
-  version = "2.3.9";
+  version = "2.4.4";
 
   src = fetchFromGitHub {
     owner = "Predidit";
     repo = "Kazumi";
     tag = version;
-    hash = "sha256-OHfWH+lkgriMH8d3xQxhFI+moPfNrYa/udoRZ8FKlqM=";
+    hash = "sha256-ipmUwW3o7TakkbFGqVUQmP9koCUiIedYu/hNtxKFjs8=";
   };
 
   echDeps = lib.importJSON ./ech-http-deps.json;
@@ -46,7 +46,7 @@ let
   };
 in
 
-flutter.buildFlutterApplication {
+flutter347.buildFlutterApplication {
   pname = "kazumi";
   inherit version src;
 

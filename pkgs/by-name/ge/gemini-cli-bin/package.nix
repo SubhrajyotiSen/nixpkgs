@@ -3,7 +3,6 @@
   stdenvNoCC,
   fetchzip,
   nodejs,
-  sysctl,
   writableTmpDirAsHomeHook,
   nix-update-script,
   ripgrep,
@@ -11,11 +10,11 @@
 }:
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "gemini-cli-bin";
-  version = "0.64.0";
+  version = "0.68.0";
 
   src = fetchzip {
     url = "https://github.com/google-gemini/gemini-cli/releases/download/v${finalAttrs.version}/gemini-cli-bundle.zip";
-    hash = "sha256-4xBGPuIIryOJLBLVlZWLsVmHnJWCsLQVXeSL17ATFQE=";
+    hash = "sha256-R4GjX4ljJczsntIaRJz+ye0mtgKyuZquu68pOx7y20Y=";
     stripRoot = false;
   };
 
@@ -72,9 +71,6 @@ stdenvNoCC.mkDerivation (finalAttrs: {
   doInstallCheck = true;
   nativeInstallCheckInputs = [
     writableTmpDirAsHomeHook
-  ]
-  ++ lib.optionals (with stdenvNoCC.hostPlatform; isDarwin && isx86_64) [
-    sysctl
   ];
 
   # versionCheckHook cannot be used because it assumes the executable is hermetic,

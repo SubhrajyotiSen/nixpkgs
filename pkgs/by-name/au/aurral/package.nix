@@ -8,6 +8,8 @@
   procps,
   fetchFromGitHub,
   gitMinimal,
+  patchelf,
+  cacert,
   nix-update-script,
   nodejs_26,
   sqlite,
@@ -31,7 +33,7 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "aurral";
-  version = "2.12.0";
+  version = "3.0.1";
 
   __structuredAttrs = true;
   strictDeps = true;
@@ -40,23 +42,17 @@ stdenv.mkDerivation (finalAttrs: {
     owner = "lklynet";
     repo = "aurral";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-slnwPhWqQDEbtkV+gTiSHHMvOxJ4de3kR85YVdP5pO0=";
+    hash = "sha256-4F/bwmTYB1qC68VPiXh3tjLQdNNVwftpy05i7B8poTE=";
   };
 
-  # Test fixtures create executable scripts; /usr/bin/env is unavailable in the sandbox.
-  postPatch = relaxNodeVersion + ''
-    substituteInPlace .tests/share/share-links.test.ts \
-      .tests/download/ytdlp-song-search.test.ts \
-      .tests/download/ytdlp-runtime.test.ts \
-      --replace-fail '#!/usr/bin/env node' '#!${lib.getExe nodejs_26}'
-  '';
+  postPatch = relaxNodeVersion;
 
   pnpmDeps = fetchPnpmDeps {
     inherit (finalAttrs) pname version src;
     inherit pnpm;
     postPatch = relaxNodeVersion;
     fetcherVersion = 5;
-    hash = "sha256-juz5YV5Vc0N24OfSjb7iltS+iLYEKUKVOML1mPS5s+0=";
+    hash = "sha256-o9BTUedHn9nuUPWaXTKSKa/pvEB7Pq2Fw8ehgi6h0RU=";
   };
 
   nativeBuildInputs = [
@@ -85,12 +81,20 @@ stdenv.mkDerivation (finalAttrs: {
   nativeCheckInputs = [
     ffmpeg
     gitMinimal
+    patchelf
     procps
   ];
   checkPhase = ''
     runHook preCheck
-    pnpm test
-    pnpm run test:integration
+    # The Hub tests start Cloudflare's prebuilt workerd to provide a local D1 database.
+    patchelf --set-interpreter ${stdenv.cc.bintools.dynamicLinker} \
+      --set-rpath ${lib.makeLibraryPath [ stdenv.cc.libc ]} \
+      node_modules/.pnpm/@cloudflare+workerd-linux-*/node_modules/@cloudflare/workerd-linux-*/bin/workerd
+    export SSL_CERT_FILE=${cacert}/etc/ssl/certs/ca-bundle.crt
+    # Test forks start background workers, so bound their concurrency as well.
+    testWorkers=$((NIX_BUILD_CORES < 2 ? NIX_BUILD_CORES : 2))
+    pnpm test --maxWorkers="$testWorkers"
+    pnpm run test:integration --maxWorkers="$testWorkers"
     runHook postCheck
   '';
 
@@ -135,7 +139,7 @@ stdenv.mkDerivation (finalAttrs: {
         exec node $out/lib/aurral/backend/scripts/resetAdminPassword.ts "\$@"
         ;;
         server|"")
-        exec node $out/lib/aurral/backend/server.ts
+        exec node --max-semi-space-size=4 $out/lib/aurral/backend/server.ts
         ;;
         -h|--help|*)
         echo "Usage: (server|resetAdminPassword)"
@@ -154,7 +158,7 @@ stdenv.mkDerivation (finalAttrs: {
   };
 
   meta = {
-    description = "Aurral is the Lidarr companion for self-hosted music discovery";
+    description = "Self-hosted music discovery, library management, and streaming";
     mainProgram = "aurral";
     homepage = "https://aurral.org";
     changelog = "https://github.com/lklynet/aurral/releases/tag/${finalAttrs.src.tag}";

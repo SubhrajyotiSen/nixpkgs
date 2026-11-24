@@ -7,16 +7,29 @@
   ninja,
   gfortran,
   mpi,
+  mpiCheckPhaseHook,
   jdk,
   libaec,
   zlib,
   testers,
   ctestCheckHook,
+  szipSupport ? true,
   cppSupport ? true,
   fortranSupport ? false,
   mpiSupport ? false,
   javaSupport ? false,
   threadsafe ? false,
+  ros3Support ? false,
+  curl,
+  aws-c-s3,
+  aws-c-auth,
+  aws-c-common,
+  aws-c-cal,
+  aws-c-io,
+  aws-c-http,
+  aws-c-compression,
+  aws-checksums,
+  s2n-tls,
   apiVersion ? null,
 }:
 
@@ -40,7 +53,7 @@ let
   enableStatic = stdenv.hostPlatform.isStatic;
 in
 stdenv.mkDerivation (finalAttrs: {
-  version = "2.2.0";
+  version = "2.2.0-unstable-2026-11-04";
   pname =
     "hdf5"
     + lib.optionalString cppSupport "-cpp"
@@ -51,8 +64,8 @@ stdenv.mkDerivation (finalAttrs: {
   src = fetchFromGitHub {
     owner = "HDFGroup";
     repo = "hdf5";
-    rev = "${finalAttrs.version}";
-    hash = "sha256-Tp2f8jJjVst0Fd07Wt4+EzjHRRI+8TlD1uWD9sDTw4g=";
+    rev = "3447b0b751c346c14098a2d72d2f2aec38c8b8a0";
+    hash = "sha256-JwEfwMn4CmLPI/4T41U4h4FaFMegYOcZwb2MU4klCQ8=";
   };
 
   __structuredAttrs = true;
@@ -66,7 +79,21 @@ stdenv.mkDerivation (finalAttrs: {
   postPatch = ''
     substituteInPlace src/CMakeLists.txt fortran/src/CMakeLists.txt c++/src/CMakeLists.txt hl/c++/src/CMakeLists.txt hl/fortran/src/CMakeLists.txt hl/src/CMakeLists.txt \
       --replace-fail '\''${exec_prefix}/''${HDF5_INSTALL_LIB_DIR}' '"''${HDF5_INSTALL_LIB_DIR}"' \
-      --replace-fail '\''${prefix}/''${HDF5_INSTALL_INCLUDE_DIR}' '"''${HDF5_INSTALL_LIB_DIR}"'
+      --replace-fail '\''${prefix}/''${HDF5_INSTALL_INCLUDE_DIR}' '"''${HDF5_INSTALL_INCLUDE_DIR}"'
+
+    # HDF5_INSTALL_INCLUDE_DIR is absolute (CMAKE_INSTALL_INCLUDEDIR), so prefixing
+    # it with $<INSTALL_PREFIX> yields ''${_IMPORT_PREFIX}//nix/store/... in the
+    # exported targets. INSTALL_INTERFACE handles relative paths on its own.
+    for f in $(grep -rlF --include=CMakeLists.txt '$<INSTALL_PREFIX>/''${HDF5_INSTALL_INCLUDE_DIR}' .); do
+      substituteInPlace "$f" \
+        --replace-fail '$<INSTALL_PREFIX>/''${HDF5_INSTALL_INCLUDE_DIR}' "\''${HDF5_INSTALL_INCLUDE_DIR}"
+    done
+
+    # The hardcoded relative "include" is resolved against $out, which has no headers.
+    for f in $(grep -rlF --include=CMakeLists.txt 'INCLUDES DESTINATION include' .); do
+      substituteInPlace "$f" \
+        --replace-fail 'INCLUDES DESTINATION include' "INCLUDES DESTINATION \''${HDF5_INSTALL_INCLUDE_DIR}"
+    done
 
     # The install prefix variables are a mess and break with abolsute paths,
     # as well as don't seem to know what is what.
@@ -88,6 +115,7 @@ stdenv.mkDerivation (finalAttrs: {
       };
     };
     inherit
+      szipSupport
       cppSupport
       fortranSupport
       mpiSupport
@@ -107,15 +135,33 @@ stdenv.mkDerivation (finalAttrs: {
     ninja
     ctestCheckHook
   ]
-  ++ lib.optional fortranSupport gfortran;
+  ++ lib.optional fortranSupport gfortran
+  # FindMPI locates MPI through the mpicc compiler wrapper
+  ++ lib.optionals mpiSupport [
+    mpi
+    mpiCheckPhaseHook
+  ];
 
-  buildInputs = lib.optional javaSupport jdk;
+  buildInputs =
+    lib.optional javaSupport jdk
+    ++ lib.optionals ros3Support [
+      curl
+      aws-c-s3
+      aws-c-auth
+      aws-c-common
+      aws-c-cal
+      aws-c-io
+      aws-c-http
+      aws-c-compression
+      aws-checksums
+      s2n-tls
+    ];
 
   # Need to propagate cmake deps
   propagatedBuildInputs = [
     zlib
-    libaec
   ]
+  ++ lib.optional szipSupport libaec
   ++ lib.optional mpiSupport mpi;
 
   cmakeFlags = [
@@ -126,7 +172,7 @@ stdenv.mkDerivation (finalAttrs: {
     (lib.cmakeBool "BUILD_STATIC_EXECS" enableStatic)
     (lib.cmakeBool "HDF5_ONLY_SHARED_LIBS" enableShared)
     (lib.cmakeBool "BUILD_SHARED_LIBS" enableShared)
-    (lib.cmakeBool "HDF5_ENABLE_SZIP_SUPPORT" true)
+    (lib.cmakeBool "HDF5_ENABLE_SZIP_SUPPORT" szipSupport)
     (lib.cmakeBool "HDF5_ENABLE_ZLIB_SUPPORT" true)
     (lib.cmakeBool "HDF5_BUILD_WITH_INSTALL_NAME" stdenv.hostPlatform.isDarwin)
     (lib.cmakeBool "HDF5_BUILD_CPP_LIB" cppSupport)
@@ -135,6 +181,7 @@ stdenv.mkDerivation (finalAttrs: {
     (lib.cmakeBool "HDF5_BUILD_JAVA" javaSupport)
     (lib.cmakeBool "HDF5_ENABLE_THREADSAFE" threadsafe)
     (lib.cmakeBool "HDF5_BUILD_HL_LIB" (!threadsafe)) # high-level API and threadsafe is unsupported
+    (lib.cmakeBool "HDF5_ENABLE_ROS3_VFD" ros3Support)
 
     # broken in nixpkgs since around 1.14.3 -> 1.14.4.3
     # https://github.com/HDFGroup/hdf5/issues/4208#issuecomment-2098698567
@@ -142,7 +189,8 @@ stdenv.mkDerivation (finalAttrs: {
       with stdenv.hostPlatform; !(isDarwin && isx86_64)
     ))
   ]
-  ++ lib.optional (apiVersion != null) (lib.cmakeFeature "HDF5_DEFAULT_API_VERSION" apiVersion);
+  ++ lib.optional (apiVersion != null) (lib.cmakeFeature "HDF5_DEFAULT_API_VERSION" apiVersion)
+  ++ lib.optional mpiSupport (lib.cmakeFeature "MPIEXEC_MAX_NUMPROCS" "2");
 
   doCheck = true;
 

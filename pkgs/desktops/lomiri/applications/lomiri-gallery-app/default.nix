@@ -24,13 +24,13 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "lomiri-gallery-app";
-  version = "3.2.1";
+  version = "3.2.2";
 
   src = fetchFromGitLab {
     owner = "ubports";
     repo = "development/apps/lomiri-gallery-app";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-DdZzLhkOu9ZevcFasAVTRE1ocYvhvTz9jX8U0QnwCig=";
+    hash = "sha256-e1I4L90k2OLFiNpx5h3lEa9pGuogTSCbuXrMHCjGZ0U=";
   };
 
   postPatch =
@@ -122,6 +122,7 @@ stdenv.mkDerivation (finalAttrs: {
         format-jpg
         format-png
         ;
+      inherit (nixosTests.lomiri) desktop-appinteractions;
     };
     updateScript = gitUpdater { rev-prefix = "v"; };
   };

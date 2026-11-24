@@ -16,6 +16,8 @@
   makeBinaryWrapper,
   mono,
   jq,
+  aws-lc,
+  zstd,
   wrapWithMono ? true,
   nix-update-script,
 }:
@@ -66,23 +68,27 @@ rustPlatform.buildRustPackage {
 
   nativeBuildInputs = [
     cargo-tauri.hook
+    pkg-config
   ]
   ++ lib.optionals stdenv.hostPlatform.isLinux [
-    pkg-config
     wrapGAppsHook3
   ]
   ++ lib.optionals stdenv.hostPlatform.isDarwin [
     makeBinaryWrapper
   ];
 
-  buildInputs = lib.optionals stdenv.hostPlatform.isLinux [
+  buildInputs = [
+    aws-lc
+    zstd
+  ]
+  ++ (lib.optionals stdenv.hostPlatform.isLinux [
     dbus
     libsoup_3
     glib
     librsvg
     glib-networking
     webkitgtk_4_1
-  ];
+  ]);
 
   buildAndTestSubdir = "owmods_gui/backend";
 

@@ -9,11 +9,11 @@ buildNpmPackage (finalAttrs: {
   __structuredAttrs = true;
 
   pname = "9router";
-  version = "0.5.112";
+  version = "0.5.119";
 
   src = fetchzip {
     url = "https://registry.npmjs.org/9router/-/9router-${finalAttrs.version}.tgz";
-    hash = "sha256-XEtAwfDUOVlKTRm/P+O+9smDpBzf5Lj3edXEm1DcvdE=";
+    hash = "sha256-V/nnrQhf+2Dd453b0yFBksSbnf0Q3A+mqAzrSZ8h2UE=";
   };
 
   npmDepsHash = "sha256-R3RFTB7Trm75fbVsCtFo+wb/jRTrIG4ZC5kKDQdQHKo=";

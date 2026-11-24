@@ -12,7 +12,7 @@
 
 buildGoModule (finalAttrs: {
   pname = "oasdiff";
-  version = "1.35.0";
+  version = "1.39.0";
 
   __darwinAllowLocalNetworking = true;
   __structuredAttrs = true;
@@ -21,10 +21,10 @@ buildGoModule (finalAttrs: {
     owner = "oasdiff";
     repo = "oasdiff";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-Sd0uNzPFLKblnSivmNwRuTfHZa0uAQ9ztYaB+ze53QI=";
+    hash = "sha256-5VJTtW5Fj+eM728bGiHcnB/KJ47Yo8oCU7LzaiAM+x8=";
   };
 
-  vendorHash = "sha256-ShHiN3pmMwZTc9Ai51CwWSXOKkxuUugbR9KOYZd4JIo=";
+  vendorHash = "sha256-m3UkwtNVJNFXqhJ0iT1nqcGAA9vsXSQGqan6+cXCKCY=";
 
   subPackages = [ "." ];
 

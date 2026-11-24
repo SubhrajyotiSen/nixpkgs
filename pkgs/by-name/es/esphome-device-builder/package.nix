@@ -17,7 +17,7 @@ let
     homepage = "https://esphome.io/";
     license = lib.licenses.asl20;
     maintainers = with lib.maintainers; [
-      tmarkus
+      AAAAAASomeThingsFailToEvaluate
       karlbeecken
     ];
     mainProgram = "esphome-device-builder";
@@ -34,17 +34,15 @@ let
 in
 pythonPackages.buildPythonApplication (finalAttrs: {
   pname = "esphome-device-builder";
-  version = "1.26.0";
+  version = "1.28.1";
   pyproject = true;
 
   src = fetchFromGitHub {
     owner = "esphome";
     repo = "device-builder";
     tag = finalAttrs.version;
-    hash = "sha256-S1y0IXrCQV/EK9gQ7UdSKfdKJZK6UY6q7NdFEcy7yao=";
+    hash = "sha256-CSRklaJAnV9++fzsz1pI9LpgyyfGMHdmQbwOh7Lgbzs=";
   };
-
-  __structuredAttrs = true;
 
   nativeBuildInputs = with pythonPackages; [
     pyprojectVersionPatchHook

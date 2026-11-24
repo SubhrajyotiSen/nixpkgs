@@ -14,13 +14,13 @@
 buildHomeAssistantComponent (finalAttrs: {
   owner = "greghesp";
   domain = "bambu_lab";
-  version = "2.2.26";
+  version = "2.4.1";
 
   src = fetchFromGitHub {
     inherit (finalAttrs) owner;
     repo = "ha-bambulab";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-9KsIzem7BjImUW+BTnAUYJ7CnU5bFpet7D2HhmOwTbA=";
+    hash = "sha256-yMWlv7sjhi5r7ZRKRF4z71VBDVWridMKDrwlW3U5oC4=";
   };
 
   dependencies = [ beautifulsoup4 ];

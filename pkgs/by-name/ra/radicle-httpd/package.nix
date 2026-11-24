@@ -1,6 +1,9 @@
 {
   asciidoctor,
   fetchFromRadicle,
+  pkg-config,
+  libgit2,
+  zstd,
   git,
   installShellFiles,
   lib,
@@ -11,17 +14,19 @@
   xdg-utils,
   versionCheckHook,
   nixosTests,
+  nix-update-script,
 }:
 
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "radicle-httpd";
-  version = "0.30.0";
+  version = "0.31.0";
 
-  env.RADICLE_VERSION = finalAttrs.version;
+  __structuredAttrs = true;
+
+  env.RADICLE_HTTPD_VERSION = finalAttrs.version;
 
   src = fetchFromRadicle {
-    # seed.radicle.dev currently doesn't update its canonical release tags correctly
-    seed = "oak.radicle.garden";
+    seed = "seed.radicle.dev";
     repo = "z4V1sjrXqjvFdnCUbxPFqd5p4DtH5";
     tag = "releases/httpd/${finalAttrs.version}";
     nonConeMode = true;
@@ -31,16 +36,23 @@ rustPlatform.buildRustPackage (finalAttrs: {
       "/explorer/Cargo.lock"
     ];
     rootDir = "explorer";
-    hash = "sha256-V0sTvJ1KLjmOQsmp3QdWX+e4O7t3BlEOi+J71rDrbBw=";
+    hash = "sha256-/H9fhYruAvDtxHm8ShNwGQIhi+cFFpVKwkh41qO+oFk=";
   };
 
-  cargoHash = "sha256-l2k6q7RtDChk9LDZngS+hh0srqNa6Z/KT2aOynmc9qs=";
+  cargoHash = "sha256-GDnQzjp4Ov5jvNGiGOO0pdJi2gcPQFlKIcs69xOLgmc=";
 
   nativeBuildInputs = [
     asciidoctor
     installShellFiles
     makeWrapper
+    pkg-config
   ];
+
+  buildInputs = [
+    libgit2
+    zstd
+  ];
+
   nativeCheckInputs = [ git ];
 
   doCheck = stdenv.hostPlatform.isLinux;
@@ -72,7 +84,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   passthru = {
     tests = { inherit (nixosTests) radicle; };
-    updateScript = ./update.sh;
+    updateScript = nix-update-script { };
   };
 
   meta = {

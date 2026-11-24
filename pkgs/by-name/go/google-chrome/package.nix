@@ -3,6 +3,7 @@
   fetchurl,
   lib,
   makeWrapper,
+  nixosTests,
   patchelf,
   stdenvNoCC,
   testers,
@@ -180,7 +181,7 @@ let
 
   linux = stdenvNoCC.mkDerivation (finalAttrs: {
     inherit pname meta;
-    version = "156.0.8078.79";
+    version = "158.0.8127.88";
 
     src =
       let
@@ -195,8 +196,8 @@ let
         url = "https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${finalAttrs.version}-1_${debArch}.deb";
         hash =
           {
-            amd64 = "sha256-vhoeFhQZ9cgnJDL2hgkSVQ2OKZheklkT+oAEk6DQyVU=";
-            arm64 = "sha256-3Gby2WhTFT41DEoJRNpFA8rjnC/LzbTgBXxk9sSSAv8=";
+            amd64 = "sha256-play2wCoy38ToddU9qrZH4QBSQZFLG37fz6tkwNdoDs=";
+            arm64 = "sha256-bHQ5mBJAun+wXDU0tKo+oxBM44jzAMK732aIT4xVQJg=";
           }
           .${debArch};
       };
@@ -300,17 +301,20 @@ let
 
     passthru = {
       updateScript = ./update.sh;
-      tests.version = testers.testVersion { package = finalAttrs.finalPackage; };
+      tests = {
+        nixos = nixosTests.google-chrome;
+        version = testers.testVersion { package = finalAttrs.finalPackage; };
+      };
     };
   });
 
   darwin = stdenvNoCC.mkDerivation (finalAttrs: {
     inherit pname meta;
-    version = "156.0.8078.80";
+    version = "158.0.8127.89";
 
     src = fetchurl {
-      url = "https://dl.google.com/release2/chrome/hmx6fwnspbytmrtkulm2cctvey_156.0.8078.80/GoogleChrome-156.0.8078.80.dmg";
-      hash = "sha256-+AU0DHP15WkSTQ/V4MC5o+uoG3YBYZjqdwOzScAAbZo=";
+      url = "https://dl.google.com/release2/chrome/adgy6ceswc76i2cvcaufmkulok6q_158.0.8127.89/GoogleChrome-158.0.8127.89.dmg";
+      hash = "sha256-9UQmEz4D6pv439LQ+SJiZfuil03dwm6L+ZzyiQ3mgh4=";
     };
 
     dontPatch = true;

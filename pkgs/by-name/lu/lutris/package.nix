@@ -253,7 +253,6 @@ buildFHSEnv {
       SDL2
       curl
       graphite2
-      gtk2
       gtk3
       udev
       ncurses
@@ -288,6 +287,8 @@ buildFHSEnv {
       # Winetricks
       fribidi
       pango
+      libadwaita
+      gtk4
     ]
     ++ xorgDeps pkgs
     ++ gstreamerDeps pkgs

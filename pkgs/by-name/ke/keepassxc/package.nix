@@ -2,6 +2,7 @@
   lib,
   stdenv,
   fetchFromGitHub,
+  fetchpatch2,
   cmake,
   qt6,
 
@@ -47,6 +48,16 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-821zL+xnCsHU8VvxsJh2a2LRGstSIq3tWQbWBk8g4hc=";
   };
 
+  __structuredAttrs = true;
+
+  outputs = [
+    "out"
+  ]
+  ++ lib.optionals (withKeePassDocs && stdenv.hostPlatform.isLinux) [
+    "man"
+    "doc"
+  ];
+
   env = lib.optionalAttrs stdenv.cc.isClang {
     NIX_CFLAGS_COMPILE = toString [
       "-Wno-old-style-cast"
@@ -55,7 +66,17 @@ stdenv.mkDerivation (finalAttrs: {
     ];
   };
 
-  patches = [ ./darwin-remove-macdeployqt.patch ];
+  patches = [
+    ./darwin-remove-macdeployqt.patch
+    # Botan 3.14 randomizes ECDSA signatures by default, which breaks
+    # TestPasskeys' hardcoded signatures; verify the signatures instead.
+    # Backported from develop, remove on next version bump.
+    (fetchpatch2 {
+      name = "botan-3.14-verify-passkey-signatures.patch";
+      url = "https://github.com/keepassxreboot/keepassxc/commit/b111337c25d1ceae829ddfb6c618305f05137ede.patch?full_index=1";
+      hash = "sha256-92vcGxoB++qvZYc/Bkqnn6WykY0ODzTZv+2LHh1vhS4=";
+    })
+  ];
 
   # Upstream develops against a build of PCSC from Xcode.
   # The types are incompatible with nixpkgs pcsclite.
@@ -128,6 +149,11 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   postInstall = lib.concatLines [
+    (lib.optionalString (withKeePassDocs && stdenv.hostPlatform.isLinux) ''
+      mkdir -p $doc/share/doc
+      mv $out/share/keepassxc/docs/ $doc/share/doc/keepassxc
+    '')
+
     (lib.optionalString stdenv.hostPlatform.isDarwin ''
       mkdir -p "$out/bin"
       for program in keepassxc-cli keepassxc-proxy; do

@@ -1,8 +1,10 @@
 {
   lib,
+  aws-lc,
   rustPlatform,
   fetchFromGitHub,
   installShellFiles,
+  pkg-config,
   nixosTests,
   stdenv,
   cacert,
@@ -23,7 +25,13 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   nativeBuildInputs = [ installShellFiles ];
 
+  nativeCheckInputs = [ pkg-config ];
+  checkInputs = [ aws-lc ];
+
   __darwinAllowLocalNetworking = true;
+
+  # The tests pick free ports in a racy way when run in parallel.
+  dontUseCargoParallelTests = true;
 
   preCheck = ''
     export SSL_CERT_FILE=${cacert}/etc/ssl/certs/ca-bundle.crt
@@ -48,10 +56,12 @@ rustPlatform.buildRustPackage (finalAttrs: {
     mainProgram = "dufs";
     homepage = "https://github.com/sigoden/dufs";
     changelog = "https://github.com/sigoden/dufs/blob/${finalAttrs.src.rev}/CHANGELOG.md";
-    license = with lib.licenses; [
-      asl20 # or
-      mit
-    ];
+    license =
+      with lib.licenses;
+      OR [
+        asl20
+        mit
+      ];
     maintainers = with lib.maintainers; [
       font44
       holymonson

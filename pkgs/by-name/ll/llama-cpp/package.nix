@@ -56,8 +56,8 @@
 let
   # Upstream reads these from git, which the release tarball does not ship.
   # They are purely informational: `llama-server --version`, `/props`, and the web UI.
-  buildNumber = "11960";
-  buildCommit = "8642541";
+  buildNumber = "12359";
+  buildCommit = "b1b770d";
 
   # It's necessary to consistently use backendStdenv when building with CUDA support,
   # otherwise we get libstdc++ errors downstream.
@@ -102,7 +102,7 @@ let
 in
 effectiveStdenv.mkDerivation (finalAttrs: {
   pname = "llama-cpp";
-  version = "0.8.0";
+  version = "1.0.0";
 
   __structuredAttrs = true;
   strictDeps = true;
@@ -116,7 +116,7 @@ effectiveStdenv.mkDerivation (finalAttrs: {
     owner = "ggml-org";
     repo = "llama.cpp";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-WQAtD8Hos6fEtgPQId7nZiLGyP4asAMKJYEXZid1nqc=";
+    hash = "sha256-aYziwYzK9Zj7sopAEsrANhMGs4BO0F2g0cDCGmYLxDA=";
   };
 
   nativeBuildInputs = [
@@ -161,7 +161,7 @@ effectiveStdenv.mkDerivation (finalAttrs: {
   ];
 
   npmRoot = "tools/ui";
-  npmDepsHash = "sha256-XLtEZsSFdk+2SyfXzBp8HQ2e27PQPpDCn1YjePU1/9w=";
+  npmDepsHash = "sha256-0OJIueUN5oD/V2NtVcXTiRW59u2tJIG3OxW8aJ8JDBY=";
   npmDeps = fetchNpmDeps {
     name = "${finalAttrs.pname}-${finalAttrs.version}-npm-deps";
     inherit (finalAttrs) src;
@@ -259,6 +259,9 @@ effectiveStdenv.mkDerivation (finalAttrs: {
     "test-arg-parser"
     "test-thread-safety"
     "test-llama-context-model"
+    # Tests convert_hf_to_gguf, which is not installed, and needs torch.
+    "test-conversion-fp8"
+    "test-kv-cache-scales"
   ]
   # icpx DAZ/FTZ makes nlohmann treat 5e-324 as 0 and pass 0.0 to Python.
   ++ optionals syclSupport [

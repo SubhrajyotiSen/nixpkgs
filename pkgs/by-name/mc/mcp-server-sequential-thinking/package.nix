@@ -9,13 +9,13 @@
 
 buildNpmPackage (finalAttrs: {
   pname = "mcp-server-sequential-thinking";
-  version = "2.1.0";
+  version = "2.5.0";
 
   src = fetchFromGitHub {
     owner = "modelcontextprotocol";
     repo = "servers";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-gzT45m4S/S7sighNwYw4I01jiLsUrGh+9H9p0neaQDE=";
+    hash = "sha256-yYfNwuNwzgguvErZRzc+M7cDt/05pU7iZuiF1L3c4hE=";
   };
 
   postPatch = ''
@@ -33,7 +33,7 @@ buildNpmPackage (finalAttrs: {
   npmWorkspace = "src/sequentialthinking";
   npmDeps = fetchNpmDeps {
     inherit (finalAttrs) src;
-    hash = "sha256-2V/DxjLtxMm+X7BPApi4JXa6R91O6TaD6J0cH37Cyoo=";
+    hash = "sha256-zq32JpOkYfNvPr6Vcej/zi1+r4c1P/tnb+zpr72zdBs=";
   };
 
   # TODO: revisit this when https://github.com/NixOS/nixpkgs/pull/333759 has landed

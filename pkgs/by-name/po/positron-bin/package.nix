@@ -18,6 +18,7 @@
   patchelf,
   openssl,
   stdenv,
+  unixodbc,
   libxdamage,
   libxcomposite,
   libx11,
@@ -31,7 +32,7 @@
 }:
 let
   pname = "positron-bin";
-  version = "2026.08.2-4";
+  version = "2026.11.1-4";
 in
 stdenv.mkDerivation {
   dontFixup = stdenv.hostPlatform.isDarwin;
@@ -41,17 +42,17 @@ stdenv.mkDerivation {
     if stdenv.hostPlatform.isDarwin then
       fetchurl {
         url = "https://cdn.posit.co/positron/releases/mac/arm64/Positron-${version}-arm64.dmg";
-        hash = "sha256-ocDWNEWiIfgLcFOTD6KqaqswRpQqf4dVqJe28lDYs9k=";
+        hash = "sha256-UGF/E5BoDyqfEhBEYwLfMlJ5+jE/81Wv5mRCFwtiVH0=";
       }
     else if stdenv.hostPlatform.system == "aarch64-linux" then
       fetchurl {
         url = "https://cdn.posit.co/positron/releases/deb/arm64/Positron-${version}-arm64.deb";
-        hash = "sha256-EHZZYLGquikmhWYPjv7+I4f1ZkSvyI9Q6nRJXvgGBk0=";
+        hash = "sha256-5rjkfF3UOEmezcRMGqmPlst7RM+OeaMazpF8jQoHiGc=";
       }
     else
       fetchurl {
         url = "https://cdn.posit.co/positron/releases/deb/x86_64/Positron-${version}-x64.deb";
-        hash = "sha256-DmlFAr24drfuqWK22uPXfHvPIuvQrtq3Yl5hUgcY3Oo=";
+        hash = "sha256-NWmBXtVAg63YGnhW+BszotZLPI40nisM/4FU2PvykQY=";
       };
 
   buildInputs = [
@@ -77,6 +78,7 @@ stdenv.mkDerivation {
     libjpeg8
     pipewire
     libxtst
+    unixodbc
   ]
   ++ lib.optionals stdenv.hostPlatform.isDarwin [
     blas
@@ -92,6 +94,18 @@ stdenv.mkDerivation {
     ++ lib.optionals stdenv.hostPlatform.isDarwin [
       _7zz
     ];
+
+  # Don't patch ONNX Runtime providers.
+  autoPatchelfIgnoreMissingDeps = lib.optionals stdenv.hostPlatform.isLinux [
+    "libcublas.so.12"
+    "libcublasLt.so.12"
+    "libcudart.so.12"
+    "libcudnn.so.9"
+    "libcufft.so.11"
+    "libcurand.so.10"
+    "libnvinfer.so.10"
+    "libnvonnxparser.so.10"
+  ];
 
   runtimeDependencies = lib.optionals stdenv.hostPlatform.isLinux [
     (lib.getLib systemdLibs) # Needed to fix the "Zygote could not fork" error.

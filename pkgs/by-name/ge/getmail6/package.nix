@@ -8,14 +8,14 @@
 
 python3.pkgs.buildPythonApplication (finalAttrs: {
   pname = "getmail6";
-  version = "6.21.00";
+  version = "6.21.02";
   pyproject = true;
 
   src = fetchFromGitHub {
     owner = "getmail6";
     repo = "getmail6";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-W+DJ9gh68sZbmrDjFn1iHhcBrsW/MVQOiHRe4OCwYSY=";
+    hash = "sha256-0e2HE1E6k70zEkYhG6s+jkP6mznPXp8SuRrrT/ZhuIc=";
   };
 
   build-system = with python3.pkgs; [
@@ -45,6 +45,7 @@ python3.pkgs.buildPythonApplication (finalAttrs: {
   disabledTests = [
     # incompatible with sandbox
     "test_full_imap"
+    "test_idle_expunge_abort_imap"
     "test_imap_ssl_parameters"
   ];
 

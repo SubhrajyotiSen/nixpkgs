@@ -6,6 +6,8 @@
   pkg-config,
   protobuf,
   fontconfig,
+  aws-lc,
+  apple-sdk_26,
   libgit2,
   openssl,
   sqlite,
@@ -99,7 +101,7 @@ let
 in
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "zed-editor";
-  version = "1.26.2";
+  version = "1.29.3";
 
   outputs = [
     "out"
@@ -112,7 +114,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     owner = "zed-industries";
     repo = "zed";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-N0gI3kEYm8CwF82wahzO2RqUpEmmGmN0RTKfBkFnSJE=";
+    hash = "sha256-RN6li+7iN8rO5B3jMUT+wg8NGfx2TwsTupqM0kjzSwY=";
   };
 
   postPatch = ''
@@ -135,7 +137,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
       --replace-fail 'builder.include(&glib_path_config);' 'builder.include("${lib.getLib glib}/lib/glib-2.0/include");'
   '';
 
-  cargoHash = "sha256-TpeNlXZvh0gkjdD7RML5YvHnPOHLsIDgUQMu32K5XTk=";
+  cargoHash = "sha256-329E+0im6LRHiTf+PztCZ3+NLPpgemGVQVZz1aa2HF0=";
 
   __structuredAttrs = true;
 
@@ -155,6 +157,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
   dontUseCmakeConfigure = true;
 
   buildInputs = [
+    aws-lc
     libgit2
     sqlite
     zlib
@@ -174,6 +177,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     libxext
   ]
   ++ lib.optionals stdenv.hostPlatform.isDarwin [
+    apple-sdk_26
     # required by installPhase
     git
   ];
@@ -304,7 +308,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     )
   ''
   + lib.optionalString buildRemoteServer ''
-    install -Dm755 $release_target/remote_server $remote_server/bin/${finalAttrs.remoteServerExecutableName}
+    install -Dm755 $release_target/remote-server $remote_server/bin/${finalAttrs.remoteServerExecutableName}
   ''
   + ''
     runHook postInstall

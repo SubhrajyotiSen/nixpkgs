@@ -8,11 +8,12 @@
   cacert,
   pkg-config,
   sqlite,
+  aws-lc,
 }:
 
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "miasma";
-  version = "0.4.3";
+  version = "0.4.4";
   __structuredAttrs = true;
   __darwinAllowLocalNetworking = true;
 
@@ -20,14 +21,17 @@ rustPlatform.buildRustPackage (finalAttrs: {
     owner = "austin-weeks";
     repo = "miasma";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-Jv0nKOdynhRiWcMX9uh1BZYmRJ1c9PXWxPr+yDq7XvQ=";
+    hash = "sha256-Hc38GpEtGjiSLlysmIXAYq3QLawxA9XPpWdPyt2Jb48=";
   };
 
-  cargoHash = "sha256-PddTPwQNrLn64CJkPxSsk8N/JVA2Kw7VFCzGt36Virk=";
+  cargoHash = "sha256-iYA6kdotlyquCorPX8E/A9Va0yHH2ahsJOWLzUY11zw=";
 
   nativeBuildInputs = [ pkg-config ];
 
-  buildInputs = [ sqlite ];
+  buildInputs = [
+    aws-lc
+    sqlite
+  ];
 
   nativeCheckInputs = [ cacert ];
 

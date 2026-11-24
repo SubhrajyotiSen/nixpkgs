@@ -16,20 +16,22 @@
 
   alsa-lib,
   openssl,
+  sqlite,
   webkitgtk_4_1,
+  zstd,
 
   nix-update-script,
 }:
 
 rustPlatform.buildRustPackage rec {
   pname = "lrcget";
-  version = "2.2.1";
+  version = "2.2.2";
 
   src = fetchFromGitHub {
     owner = "tranxuanthang";
     repo = "lrcget";
     tag = version;
-    hash = "sha256-PI5yKVFGm4kdefLXltEq/WupJ5HKe3tqSm0O0DJOa/Q=";
+    hash = "sha256-JYWeV0iXpoYu5yUIjLA6nNBvzTS6YDieXWE689+ZVXs=";
   };
 
   patches = [
@@ -40,7 +42,7 @@ rustPlatform.buildRustPackage rec {
   cargoRoot = "src-tauri";
   buildAndTestSubdir = "src-tauri";
 
-  cargoHash = "sha256-qrJnEqmqCC6iDMbDY3W8/E5+J3qjLdLRLza3lgi954w=";
+  cargoHash = "sha256-n+yuDE5HNXiup2X8dyM7qEJudhe4kj/e7gY7BGsNTxI=";
 
   # FIXME: This is a workaround, because we have a git dependency node_modules/lrc-kit contains install scripts
   # but has no lockfile, which is something that will probably break.
@@ -121,16 +123,20 @@ rustPlatform.buildRustPackage rec {
     nodejs
     npmHooks.npmConfigHook
     rustPlatform.bindgenHook
+    pkg-config
   ]
   ++ lib.optionals (!stdenv.hostPlatform.isDarwin) [
-    pkg-config
     wrapGAppsHook3
   ]
   ++ lib.optionals stdenv.hostPlatform.isDarwin [
     makeBinaryWrapper
   ];
 
-  buildInputs = lib.optionals (!stdenv.hostPlatform.isDarwin) [
+  buildInputs = [
+    sqlite
+    zstd
+  ]
+  ++ lib.optionals (!stdenv.hostPlatform.isDarwin) [
     alsa-lib
     openssl
     webkitgtk_4_1

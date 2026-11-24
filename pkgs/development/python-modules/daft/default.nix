@@ -13,6 +13,9 @@
   rustc,
   nasm,
 
+  # buildInputs
+  zstd,
+
   # dependencies
   packaging,
   pyarrow,
@@ -80,7 +83,6 @@ buildPythonPackage (finalAttrs: {
   pname = "daft";
   version = "0.7.26";
   pyproject = true;
-  __structuredAttrs = true;
 
   src = fetchFromGitHub {
     owner = "Eventual-Inc";
@@ -132,7 +134,16 @@ buildPythonPackage (finalAttrs: {
     nasm
   ];
 
+  buildInputs = [
+    zstd
+  ];
+
   dontUseCmakeConfigure = true;
+
+  # keeps tikv-jemalloc-sys on its vendored static jemalloc
+  postConfigure = ''
+    unset JEMALLOC_OVERRIDE
+  '';
 
   env = {
     DAFT_RUNNER = "native";

@@ -19,13 +19,13 @@ flutter347.buildFlutterApplication (
   finalAttrs:
   rec {
     pname = "fluffychat-${targetFlutterPlatform}";
-    version = "2.11.1";
+    version = "2.11.5";
 
     src = fetchFromGitHub {
       owner = "krille-chan";
       repo = "fluffychat";
       tag = "v${version}";
-      hash = "sha256-l0NyKVjZvbvQNriouAA4FwhLD64L5OE1RJssqPRXcto=";
+      hash = "sha256-hyLBN+qrBuJ/mQ3YeHYML3ZcIV4lYKzo6RlwlcU3+J0=";
     };
 
     inherit pubspecLock;

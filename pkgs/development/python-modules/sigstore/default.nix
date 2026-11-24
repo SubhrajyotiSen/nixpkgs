@@ -33,7 +33,6 @@ buildPythonPackage (finalAttrs: {
   pname = "sigstore";
   version = "4.5.1";
   pyproject = true;
-  __structuredAttrs = true;
 
   src = fetchFromGitHub {
     owner = "sigstore";
@@ -42,10 +41,16 @@ buildPythonPackage (finalAttrs: {
     hash = "sha256-YpqkKyhgr8cZ3NxVGVmTkv1Wz+lqkBikHY4N2LVK/UI=";
   };
 
+  postPatch = ''
+    substituteInPlace pyproject.toml \
+      --replace-fail 'uv_build>=0.12.0,<0.13.0' uv_build
+  '';
+
   build-system = [ uv-build ];
 
   pythonRelaxDeps = [
     "rich"
+    "sigstore-models"
     "tuf"
   ];
 

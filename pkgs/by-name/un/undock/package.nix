@@ -5,13 +5,13 @@
 }:
 buildGoModule (finalAttrs: {
   pname = "undock";
-  version = "0.14.1";
+  version = "0.15.0";
 
   src = fetchFromGitHub {
     owner = "crazy-max";
     repo = "undock";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-QL4HcC8Tkbp6UQ/UuShfV2LlYCAhj4UnL8BvdpeRH0U=";
+    hash = "sha256-bdX9YITBesMioiWp3irI4+yJRMhzbu//neso6oANcLA=";
   };
 
   vendorHash = null;

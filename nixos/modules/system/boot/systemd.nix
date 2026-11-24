@@ -89,6 +89,7 @@ let
     "systemd-fsck-root.service"
     "systemd-growfs@.service"
     "systemd-growfs-root.service"
+    "systemd-loop@.service"
     "systemd-remount-fs.service"
     "systemd-pstore.service"
     "local-fs.target"
@@ -259,23 +260,7 @@ in
 
   options.systemd = {
 
-    package = mkPackageOption pkgs "systemd" { } // {
-      # HORRIBLE HACK
-      # Put back the patch that completely broke most networkd setups.
-      # This needs to be reverted and either reinstated in the package
-      # proper, or fixed within the networkd NixOS module, but right now
-      # we just need things to stop being on fire. -K900
-      #
-      # DO NOT remove this without verifying at least
-      # nixosTests.predictable-interface-names.predictableNetworkdSystemdStage1
-      apply =
-        pkg:
-        pkg.overrideAttrs (prevAttrs: {
-          patches = prevAttrs.patches or [ ] ++ [
-            ./systemd-search-path.patch
-          ];
-        });
-    };
+    package = mkPackageOption pkgs "systemd" { };
 
     enableStrictShellChecks = mkEnableOption "" // {
       description = ''
@@ -940,7 +925,10 @@ in
     # https://github.com/systemd/systemd/blob/v259.3/src/vmspawn/vmspawn.c#L2662
     # this service is used, for example, when NixOS is started via systemd-vmspawn
     systemd.services."sshd-vsock@" = mkIf config.services.openssh.enable {
-      serviceConfig.ExecSearchPath = "${config.services.openssh.package}/bin";
+      serviceConfig.ExecSearchPath = lib.makeBinPath [
+        config.services.openssh.package
+        cfg.package
+      ];
       overrideStrategy = "asDropin";
     };
 

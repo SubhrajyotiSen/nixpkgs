@@ -51,7 +51,6 @@ buildPythonPackage (finalAttrs: {
   pname = "pymupdf";
   version = "1.28.2";
   pyproject = true;
-  __structuredAttrs = true;
 
   src = fetchFromGitHub {
     owner = "pymupdf";
@@ -65,9 +64,15 @@ buildPythonPackage (finalAttrs: {
     ./conftest-dont-pip-install.patch
     # CVE-2026-82035
     (fetchpatch {
-      name = "extract_objects(): avoid path escape from directory";
+      name = "extract_objects-avoid-path-escape-from-directory.patch";
       url = "https://github.com/pymupdf/PyMuPDF/commit/b2c8f3a859fed35c379a44df566f770dc3e18605.patch";
       hash = "sha256-YW1UtGhDJh69YKPCtZS7MqsisbltEKZeGMFU3RUQVHw=";
+    })
+    # SWIG 4.5 dropped Py2 compatibility macros; pymupdf patched its code accordingly
+    (fetchpatch {
+      name = "swig-4.5-compat.patch";
+      url = "https://github.com/pymupdf/PyMuPDF/commit/d2ddf9032d61f8344cd06ab2c4bb077771047e22.patch";
+      hash = "sha256-O3Si7is6gtGs0d/K8P0VrnZzWBGaC/7xKSm7ag1N6AY=";
     })
   ];
 
@@ -78,11 +83,11 @@ buildPythonPackage (finalAttrs: {
       --replace-fail "ret.append('swig==4.3.1')" "pass"
   '';
 
-  # `build_extension` passes arguments to `$LD` that are meant for `c++`.
-  # When `LD` is not set, `build_extension` falls back to using `c++` in `PATH`.
-  # See https://github.com/pymupdf/PyMuPDF/blob/1.26.6/pipcl.py#L1998 for details.
+  # pipcl's `build_extension` links with `$LD` and passes it compiler-driver
+  # arguments, falling back to a bare `c++` when `LD` is unset. Link with the
+  # (possibly target-prefixed) C++ compiler that pipcl already compiles with.
   preConfigure = ''
-    unset LD
+    export LD="$CXX"
   '';
 
   build-system = [

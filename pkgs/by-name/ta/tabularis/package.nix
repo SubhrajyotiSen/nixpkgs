@@ -12,6 +12,8 @@
   webkitgtk_4_1,
   pkg-config,
   openssl,
+  sqlite,
+  zstd,
   cacert,
   nix-update-script,
 }:
@@ -60,6 +62,8 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   buildInputs = [
     openssl
+    sqlite
+    zstd
   ]
   ++ lib.optionals stdenv.hostPlatform.isLinux [
     webkitgtk_4_1

@@ -6,11 +6,13 @@
   gitMinimal,
   nix-update-script,
   stdenv,
+  pkg-config,
+  sqlite,
 }:
 
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "tgrep";
-  version = "1.2.4";
+  version = "1.2.7";
   __structuredAttrs = true;
   __darwinAllowLocalNetworking = true;
 
@@ -18,10 +20,14 @@ rustPlatform.buildRustPackage (finalAttrs: {
     owner = "microsoft";
     repo = "tgrep";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-/f5NOr3xVC5RCt/Ev6fLL/Vq0aD6tHdEs19vYN/JnYE=";
+    hash = "sha256-Ux5oA86H+MR3uJszdVpkn4hJ0eBZgdwenNhVFvpngYg=";
   };
 
-  cargoHash = "sha256-S2ujpwk+Jh8M29donjhtSFkpcxqmdRFb7b2SZZTVJEc=";
+  cargoHash = "sha256-a4evdc/1RRoe1BPPLDKTekSUwfYcNjrlQU7Jf67/Wys=";
+
+  nativeBuildInputs = [ pkg-config ];
+
+  buildInputs = [ sqlite ];
 
   doInstallCheck = true;
   nativeInstallCheckInputs = [ versionCheckHook ];
@@ -58,6 +64,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     "--skip=transient_retirement_locks_defer_attachment_without_changing_its_exact_intent"
     "--skip=unknown_missing_replaced_and_inaccessible_owner_proofs_never_release_leases"
     "--skip=unrelated_store_named_directories_keep_ordinary_indexes_usable"
+    "--skip=explicit_refresh_rereads_all_files_even_with_pending_path_hints"
     "--skip=worktrees"
     "--skip=managed"
     "--skip=generations"

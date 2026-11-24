@@ -28,19 +28,17 @@
 
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "vector";
-  version = "0.60.0";
+  version = "0.62.0";
 
   src = fetchFromGitHub {
     owner = "vectordotdev";
     repo = "vector";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-cV1BXvdMiHvm7igf0qSvECPtPvOzTQNadOGMkpcHYS8=";
+    hash = "sha256-6036j5ZmzVQVwqxlyguGm3gU2SMvU5ufUe4ZXJZKupo=";
   };
 
   cargoPatches = [
     # Make the postgres and doris sinks (sqlx) use the system CA store
-    # instead of webpki-roots, and bump webpki-roots >= 1.0.10 and
-    # rustls-webpki >= 0.103.16 for the remaining compiled-in copies.
     # https://github.com/NixOS/nixpkgs/issues/576544
     ./sqlx-native-roots-and-bump-webpki.patch
   ];
@@ -51,7 +49,10 @@ rustPlatform.buildRustPackage (finalAttrs: {
     ./mongodb-metrics-system-ca.patch
   ];
 
-  cargoHash = "sha256-aFDO02KB5jqZsDJHrdeLLDDUZxRGEVWwjGo6LUIywiU=";
+  cargoHash = "sha256-L5IFgM/xC3fIXylASYGSMUvAER67dRAyGQhZhuBgdkA=";
+
+  # cargo-auditable passes Vector's aws-config feature to vdev, which has no such feature.
+  auditable = false;
 
   nativeBuildInputs = [
     pkg-config

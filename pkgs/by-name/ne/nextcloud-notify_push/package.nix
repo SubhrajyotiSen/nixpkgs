@@ -3,6 +3,9 @@
   fetchFromGitHub,
   nixosTests,
   rustPlatform,
+  pkg-config,
+  aws-lc,
+  sqlite,
   fetchNextcloudApp,
 }:
 
@@ -23,6 +26,15 @@ rustPlatform.buildRustPackage rec {
   };
 
   cargoHash = "sha256-skKOCJBtpvtdc594eOxbvSIl+SucaH0jl1gFv9kfvNA=";
+
+  nativeBuildInputs = [
+    pkg-config
+  ];
+
+  buildInputs = [
+    aws-lc
+    sqlite
+  ];
 
   passthru = rec {
     app = fetchNextcloudApp {
@@ -48,8 +60,8 @@ rustPlatform.buildRustPackage rec {
       };
     };
     tests =
-      lib.filterAttrs (
-        key: lib.const (lib.hasPrefix "with-postgresql-and-redis" key)
+      lib.mapAttrs' (
+        k: { with-postgresql-and-redis, ... }: lib.nameValuePair k with-postgresql-and-redis
       ) nixosTests.nextcloud
       // {
         inherit test_client;

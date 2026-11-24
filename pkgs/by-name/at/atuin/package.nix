@@ -11,6 +11,7 @@
   zstd,
   sqlite,
   pkg-config,
+  python3,
   rustPlatform,
   stdenv,
   writableTmpDirAsHomeHook,
@@ -19,16 +20,25 @@
 
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "atuin";
-  version = "18.24.4";
+  version = "18.24.8";
 
   src = fetchFromGitHub {
     owner = "atuinsh";
     repo = "atuin";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-IyAR7TZqMrCuflkfs9Rgnfm5PrUDYVi0O8//WU8/KAI=";
+    hash = "sha256-JOJ/My4/IaAzSX6NJpFfcf9bAEutuRpbjWx7zS/uzRw=";
   };
 
-  cargoHash = "sha256-rwB3hdVygTRAxaSCIioFAjMWw9V5bkRUBXHyFrQ4MtI=";
+  cargoHash = "sha256-+ov43XTWhHJj+/c2XTu3GCXExdg3q+PC4AEqOf2Nun4=";
+
+  # crates/atuin-common/src/secrets.rs sets a `REDACT_BUDGET` of 250ms for release builds
+  # and 5s (which we increase to 30s here) for debug builds.
+  # 5s (let alone 250ms) is too short for the tests to pass sometimes, but increasing
+  # the timeout by patching it for release mode would make some things slower at runtime.
+  postPatch = ''
+    substituteInPlace crates/atuin-common/src/secrets.rs \
+      --replace-fail 'Duration::from_secs(5)' 'Duration::from_secs(30)'
+  '';
 
   # atuin's default features include 'check-updates', which do not make sense
   # for distribution builds. List all other default features.
@@ -56,10 +66,12 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   # e2e_pty tests drive an interactive bash (needs readline), run `clear`,
   # and create git repositories for workspace filtering
+  # e2e_ai_sessions tests run a fake hermes that imports sessions with a python3 script.
   nativeCheckInputs = [
     bashInteractive
     gitMinimal
     ncurses
+    python3
     writableTmpDirAsHomeHook
   ];
 
@@ -69,6 +81,12 @@ rustPlatform.buildRustPackage (finalAttrs: {
       --fish <($out/bin/atuin gen-completions -s fish) \
       --zsh <($out/bin/atuin gen-completions -s zsh)
   '';
+
+  # Due to the REDACT_BUDGET issue mentioned above, we need to build the tests in debug mode.
+  checkType = "debug";
+
+  # Many tests are timing-sensitive on Darwin.
+  doCheck = !stdenv.hostPlatform.isDarwin;
 
   checkFlags = [
     # tries to make a network access
@@ -85,12 +103,6 @@ rustPlatform.buildRustPackage (finalAttrs: {
     "--skip=operator_creates_resets_and_deletes_a_user"
     # timing-dependent: fails when the index reload is too fast to measure
     "--skip=end_history_is_not_starved_by_an_index_reload"
-    # timing sensitive
-    "--skip=a_copy_behind_another_machine_catches_up_as_it_resumes"
-    "--skip=capture_starts_when_the_config_turns_it_on"
-    "--skip=continuing_a_diverged_session_carries_one_branch"
-    "--skip=continuing_in_another_agent_carries_the_conversation"
-    "--skip=disjoint_concurrent_deletes_leave_the_index_empty"
   ];
 
   # The e2e tests start an interactive bash, which sources the host's

@@ -1,5 +1,6 @@
 {
   lib,
+  aws-lc,
   callPackage,
   fetchFromGitHub,
   gitMinimal,
@@ -44,6 +45,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   buildInputs = [
     finalAttrs.passthru.nix
+    aws-lc
     gitMinimal
     libgit2
     libssh2
@@ -95,7 +97,6 @@ rustPlatform.buildRustPackage (finalAttrs: {
   ];
 
   passthru = {
-    frontend = callPackage ./frontend.nix { gradient = finalAttrs.finalPackage; };
     nix = callPackage ./nix.nix { inherit (finalAttrs) src; };
   };
 

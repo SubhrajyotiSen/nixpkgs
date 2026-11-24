@@ -2,21 +2,22 @@
   lib,
   buildHomeAssistantComponent,
   fetchFromGitHub,
+  home-assistant,
   paho-mqtt,
-  pytest-homeassistant-custom-component,
+  pytest-homeassistant,
   pytestCheckHook,
 }:
 
 buildHomeAssistantComponent (finalAttrs: {
   owner = "mrk-its";
   domain = "blitzortung";
-  version = "1.7.4";
+  version = "1.9.0";
 
   src = fetchFromGitHub {
     owner = "mrk-its";
     repo = "homeassistant-blitzortung";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-f1qmDaWwnAeEAr/NdZoU8g9GCkzCGakk2vzWdZHnEag=";
+    hash = "sha256-EVERX+cdBN04K2lS04zAfoQz6mElQ1ObyMF9Mi/0d8c=";
   };
 
   dependencies = [
@@ -24,7 +25,8 @@ buildHomeAssistantComponent (finalAttrs: {
   ];
 
   nativeCheckInputs = [
-    pytest-homeassistant-custom-component
+    home-assistant
+    pytest-homeassistant
     pytestCheckHook
   ];
 

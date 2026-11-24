@@ -6,6 +6,7 @@
   postgresql,
   protobuf,
   rust-jemalloc-sys,
+  aws-lc,
   nixosTests,
   withOtel ? false,
 }:
@@ -14,7 +15,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
   inherit (hydra) version src;
   __structuredAttrs = true;
 
-  cargoHash = "sha256-kKQTbnivtC/YzvIHj408b2lZlj4eEUKdMBcdocnXsS0=";
+  cargoHash = "sha256-wufDnVZf38d6dPKuAcOEIAQXACsRC/zSZg8kNZEph54=";
 
   cargoBuildFlags = [
     "--package"
@@ -31,6 +32,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
   buildInputs = [
     protobuf
     rust-jemalloc-sys
+    aws-lc
   ];
 
   # The tests start their own throwaway PostgreSQL instances.

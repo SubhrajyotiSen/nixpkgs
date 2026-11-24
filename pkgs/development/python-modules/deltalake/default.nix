@@ -9,8 +9,10 @@
   pkg-config,
 
   # buildInputs
-  openssl,
+  aws-lc,
   libiconv,
+  openssl,
+  zstd,
 
   # dependencies
   arro3-core,
@@ -39,7 +41,6 @@ buildPythonPackage (finalAttrs: {
   pname = "deltalake";
   version = "1.6.6";
   pyproject = true;
-  __structuredAttrs = true;
 
   # The GitHub repository does not ship a Cargo.lock
   src = fetchPypi {
@@ -57,6 +58,11 @@ buildPythonPackage (finalAttrs: {
   # https://github.com/NixOS/nixpkgs/issues/541257
   postPatch = ''
     rm -r python/.cargo
+  '';
+
+  # keeps tikv-jemalloc-sys on its vendored static jemalloc
+  postConfigure = ''
+    unset JEMALLOC_OVERRIDE
   '';
 
   env = {
@@ -79,7 +85,9 @@ buildPythonPackage (finalAttrs: {
   ]);
 
   buildInputs = [
+    aws-lc
     openssl
+    zstd
   ]
   ++ lib.optionals stdenv.hostPlatform.isDarwin [
     libiconv

@@ -8,12 +8,12 @@
 
 buildPythonPackage (finalAttrs: {
   pname = "pyngrok";
-  version = "9.1.0";
+  version = "9.1.4";
   pyproject = true;
 
   src = fetchPypi {
     inherit (finalAttrs) pname version;
-    hash = "sha256-jZpSHT3ymtP0FSO+E/HvB5BZJgV2TYdgWTeqsg/2fao=";
+    hash = "sha256-G+RWzWEY/lqLvOmiN7wXqB2PIM+nc0pbHbY6HcS38qs=";
   };
 
   build-system = [ setuptools ];

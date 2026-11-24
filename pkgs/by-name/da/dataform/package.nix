@@ -13,7 +13,7 @@
 
 buildNpmPackage (finalAttrs: {
   pname = "dataform";
-  version = "3.1.2";
+  version = "3.1.5";
 
   __structuredAttrs = true;
   strictDeps = true;
@@ -22,7 +22,7 @@ buildNpmPackage (finalAttrs: {
 
   src = fetchurl {
     url = "https://registry.npmjs.org/@dataform/cli/-/cli-${finalAttrs.version}.tgz";
-    hash = "sha256-izQX7CETn6JylC/sAchVsX6IuBwrSNJGUuDrEzOqv+s=";
+    hash = "sha256-pebg1ckSUWyHGX7NVvCa0vZqqFVtbqsc3ZGjzbdu5mI=";
   };
 
   # Inject the locally committed lockfile into the extracted source
@@ -30,7 +30,7 @@ buildNpmPackage (finalAttrs: {
     cp ${./package-lock.json} package-lock.json
   '';
 
-  npmDepsHash = "sha256-9VTs8H+T3vQ0EwWz9mvHwz/DwTkEmLeXnZqZASHepFI=";
+  npmDepsHash = "sha256-3c2j3f/Zq1/BVRXKfSE035lVsFI9UoK9TaSCGz8eDVA=";
 
   dontNpmBuild = true;
 

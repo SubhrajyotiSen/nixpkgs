@@ -5,7 +5,6 @@
   fetchFromGitHub,
   buildNpmPackage,
   nix-update-script,
-  nodejs_22,
   electron,
   makeWrapper,
   copyDesktopItems,
@@ -34,8 +33,6 @@ buildNpmPackage rec {
     '';
   };
 
-  nodejs = nodejs_22;
-
   npmDepsFetcherVersion = 2;
   npmDepsHash = "sha256-knLLTC6xAw1ycqYLYfNtnZsfTjRHuV6vAXc8JQ6u8HM=";
   npmFlags = [ "--legacy-peer-deps" ];
@@ -62,6 +59,7 @@ buildNpmPackage rec {
       exec = "bruno %U";
       icon = "bruno";
       comment = "Opensource API Client for Exploring and Testing APIs";
+      mimeTypes = [ "x-scheme-handler/bruno" ];
       categories = [ "Development" ];
       startupWMClass = "Bruno";
     })
@@ -94,16 +92,7 @@ buildNpmPackage rec {
 
   env.ELECTRON_SKIP_BINARY_DOWNLOAD = 1;
 
-  # remove giflib dependency
   npmRebuildFlags = [ "--ignore-scripts" ];
-  preBuild = ''
-    # upstream keeps removing and adding back canvas, only patch it when it is present
-    if [[ -e node_modules/canvas/binding.gyp ]]; then
-      substituteInPlace node_modules/canvas/binding.gyp \
-        --replace-fail "'with_gif%': '<!(node ./util/has_lib.js gif)'" "'with_gif%': 'false'"
-      npm rebuild
-    fi
-  '';
 
   buildPhase = ''
     runHook preBuild

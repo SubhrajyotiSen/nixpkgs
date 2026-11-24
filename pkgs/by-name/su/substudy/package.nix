@@ -5,12 +5,15 @@
 
   ffmpeg,
   makeWrapper,
+  sqlite,
   writableTmpDirAsHomeHook,
 }:
 
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "substudy";
   version = "0.6.10";
+
+  __structuredAttrs = true;
 
   src = fetchFromGitHub {
     owner = "emk";
@@ -23,12 +26,14 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   nativeBuildInputs = [ makeWrapper ];
 
+  buildInputs = [ sqlite ];
+
   nativeCheckInputs = [
     ffmpeg
     writableTmpDirAsHomeHook
   ];
 
-  cargoBuildFlags = [ "-p substudy" ];
+  cargoBuildFlags = [ "--package=substudy" ];
 
   checkFlags = [
     # flaky: relies on sqlite ms timestamps differing across 3 quick inserts

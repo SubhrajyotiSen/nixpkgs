@@ -1,26 +1,33 @@
 {
   stdenv,
   lib,
+  aws-lc,
   fetchFromGitHub,
+  pkg-config,
   rustPlatform,
   installShellFiles,
 }:
 
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "topgrade";
-  version = "17.14.1";
+  version = "17.16.0";
 
   src = fetchFromGitHub {
     owner = "topgrade-rs";
     repo = "topgrade";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-JByqgvNWmVVN/3HtYXMlNpLZx0dSw7JNCKflvH6o3OI=";
+    hash = "sha256-a2eeivvrjvML8e8varZa3o1xndkpnyCNUDnPim+iV2A=";
   };
 
-  cargoHash = "sha256-ZKEH+aCiGZYcCiM8vk7U95h7+q/MnSpzKrF8uUVhpkc=";
+  cargoHash = "sha256-ioSYCGt/hicvH4Z7EDXcRkrv84cWZBhblP8kBDi5qdA=";
 
   nativeBuildInputs = [
     installShellFiles
+    pkg-config
+  ];
+
+  buildInputs = [
+    aws-lc
   ];
 
   env.NIX_CFLAGS_COMPILE = toString (

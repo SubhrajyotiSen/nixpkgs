@@ -6,13 +6,13 @@
 }:
 mkLibretroCore {
   core = "vice-${type}";
-  version = "0-unstable-2026-10-03";
+  version = "0-unstable-2026-11-09";
 
   src = fetchFromGitHub {
     owner = "libretro";
     repo = "vice-libretro";
-    rev = "f63b56688f3133a2bb17499db9eebb7ab81df5f5";
-    hash = "sha256-c0p/id/imkmau/9X6MwomjBSBZ1sbYqv8sJ8NpJuz+g=";
+    rev = "76cde0b2cc4e52106618f2cc5d9d1112d9205c89";
+    hash = "sha256-taVseLw61F/qmSj7Mpoll/h9mxf5mAcW8nCSsy47dBg=";
   };
 
   makefile = "Makefile";

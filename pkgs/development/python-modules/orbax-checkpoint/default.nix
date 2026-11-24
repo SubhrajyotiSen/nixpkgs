@@ -43,15 +43,14 @@
 
 buildPythonPackage (finalAttrs: {
   pname = "orbax-checkpoint";
-  version = "0.12.8";
+  version = "0.12.11";
   pyproject = true;
-  __structuredAttrs = true;
 
   src = fetchFromGitHub {
     owner = "google";
     repo = "orbax";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-+jE6piKv1Q/e/nVwnJeufrMfzVv/LEZh7c+/UMDobGM=";
+    hash = "sha256-xeTZKIen7rze0VjbhQs2oeKoi1QYleuMZZ7sH+LSfRE=";
   };
 
   sourceRoot = "${finalAttrs.src.name}/checkpoint";
@@ -76,6 +75,7 @@ buildPythonPackage (finalAttrs: {
     uvloop
   ]
   ++ etils.optional-dependencies.epath
+  ++ etils.optional-dependencies.epath-gcs
   ++ etils.optional-dependencies.epy;
 
   nativeCheckInputs = [
@@ -128,6 +128,10 @@ buildPythonPackage (finalAttrs: {
     "test_memory_size"
     "test_number_of_broadcasts"
     "test_tree_memory_per_device"
+
+    # ValueError: cannot reshape array of size 1 into shape (2,0)
+    "CopyDeviceArraysForAsyncTransferTest"
+    "test_balance_arrays_across_replicas_rejects_local_checkpointing"
   ]
   ++ lib.optionals stdenv.hostPlatform.isDarwin [
     # Probably failing because of a filesystem impurity

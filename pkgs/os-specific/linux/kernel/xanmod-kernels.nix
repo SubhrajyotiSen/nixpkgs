@@ -17,14 +17,14 @@ let
   variants = {
     # ./update-xanmod.sh lts
     lts = {
-      version = "6.18.60";
-      hash = "sha256-Cr00tBcTVqTccLQ3Ptxx0AvxGs7vvfFT70syY+u+uUc=";
+      version = "6.18.65";
+      hash = "sha256-ccAxFHx2MItSB+bdauiPMi3uLF2qy+fwADXuc9rtLnU=";
       isLTS = true;
     };
     # ./update-xanmod.sh main
     main = {
-      version = "7.2.15";
-      hash = "sha256-rlJRczikcFlarexiX0ByhWt08IONMtBQlq2Tqo5Atso=";
+      version = "7.3.6";
+      hash = "sha256-MlHAQXRGd6w4pNatDleAAN4OnodXfG+6WwLcaj/9jo4=";
     };
   };
 

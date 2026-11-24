@@ -21,7 +21,6 @@ buildPythonPackage (finalAttrs: {
   pname = "warp-nn";
   version = "0.4.1";
   pyproject = true;
-  __structuredAttrs = true;
 
   src = fetchFromGitHub {
     owner = "NVIDIA";
@@ -66,7 +65,9 @@ buildPythonPackage (finalAttrs: {
     # Wrong results on CPUs with SVE (Cortex-A720, Cortex-X925), fine on Neoverse N1
     # AssertionError: [all-close] Failed (at index 0)
     "tests/modules/layers/test_conv_1d.py::test_forward"
+    "tests/modules/layers/test_conv_1d.py::test_gradients"
     "tests/modules/layers/test_conv_2d.py::test_forward"
+    "tests/modules/layers/test_conv_2d.py::test_gradients"
   ];
 
   meta = {

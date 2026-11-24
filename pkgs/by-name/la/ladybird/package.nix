@@ -39,7 +39,6 @@
   cargo,
   fast-float,
   ffmpeg,
-  fmt,
   fontconfig,
   rustPlatform,
   rustc,
@@ -155,7 +154,6 @@ stdenv.mkDerivation (finalAttrs: {
     cpptrace
     fast-float
     ffmpeg
-    fmt
     fontconfig
     harfbuzz
     libavif
@@ -180,7 +178,6 @@ stdenv.mkDerivation (finalAttrs: {
     })
     openssl
     qt6Packages.qtbase
-    qt6Packages.qtpositioning
     sdl3
     simdutf
     (skia.overrideAttrs (prev: {
@@ -210,6 +207,7 @@ stdenv.mkDerivation (finalAttrs: {
     libpulseaudio.dev
     glib
     libdrm
+    qt6Packages.qtpositioning
     qt6Packages.qtwayland
     vulkan-headers
     vulkan-loader
@@ -228,6 +226,9 @@ stdenv.mkDerivation (finalAttrs: {
     # Ladybird requires icu 78, but without this flag the default icu
     # from other dependencies gets picked up instead.
     (lib.cmakeFeature "ICU_ROOT" (toString icu78.dev))
+    # Upstream defaults to -Ctarget-cpu=native for Rust, which cc-wrapper
+    # cannot strip; target a portable baseline instead.
+    (lib.cmakeBool "ENABLE_CI_BASELINE_CPU" true)
   ]
   ++ lib.optionals stdenv.hostPlatform.isLinux [
     "-DCMAKE_INSTALL_LIBEXECDIR=libexec"

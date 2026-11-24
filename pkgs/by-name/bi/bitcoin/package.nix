@@ -62,7 +62,7 @@ stdenv.mkDerivation (finalAttrs: {
     installShellFiles
     gnupg
   ]
-  ++ lib.optionals (stdenv.hostPlatform.isDarwin && stdenv.hostPlatform.isAarch64) [
+  ++ lib.optionals stdenv.hostPlatform.isDarwin [
     autoSignDarwinBinariesHook
   ]
   ++ lib.optionals withGui [ qt6.wrapQtAppsHook ];
@@ -215,5 +215,6 @@ stdenv.mkDerivation (finalAttrs: {
     ];
     license = lib.licenses.mit;
     platforms = lib.platforms.unix;
+    mainProgram = if withGui then "bitcoin-qt" else "bitcoind";
   };
 })

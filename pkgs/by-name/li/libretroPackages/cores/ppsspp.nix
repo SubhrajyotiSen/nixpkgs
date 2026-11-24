@@ -13,13 +13,13 @@
 }:
 mkLibretroCore {
   core = "ppsspp";
-  version = "0-unstable-2026-10-26";
+  version = "0-unstable-2026-11-19";
 
   src = fetchFromGitHub {
     owner = "hrydgard";
     repo = "ppsspp";
-    rev = "e77f0e46b8f0c1e0da99297728d7c940efa3b5f6";
-    hash = "sha256-lIJy/nboFrl9VApPQrPsIHfRzxSW0Pv8JtP1Q2qGBek=";
+    rev = "c00851f34aa37bfe5f834481cbc77d7c646a01dc";
+    hash = "sha256-fgSneCi+YwjSlt8jtFpUA81i9XBCQyn3iGjzcut6aw0=";
     fetchSubmodules = true;
   };
 
@@ -51,9 +51,5 @@ mkLibretroCore {
     description = "PPSSPP libretro port";
     homepage = "https://github.com/hrydgard/ppsspp";
     license = lib.licenses.gpl2Plus;
-    badPlatforms = [
-      # error: cannot convert 'uint32x4_t' to 'int' in initialization
-      "aarch64-linux"
-    ];
   };
 }

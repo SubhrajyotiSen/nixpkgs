@@ -2,9 +2,12 @@
   lib,
   rustPlatform,
   fetchFromRadicle,
+  pkg-config,
+  libgit2,
   stdenv,
   gitMinimal,
   versionCheckHook,
+  nix-update-script,
 }:
 
 rustPlatform.buildRustPackage (finalAttrs: {
@@ -22,6 +25,10 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   cargoHash = "sha256-Kk5yKuNOEf3gu7XNzsQJ54tsCExg2uRzmp8LcVDAn0E=";
 
+  nativeBuildInputs = [ pkg-config ];
+
+  buildInputs = [ libgit2 ];
+
   nativeCheckInputs = [ gitMinimal ];
 
   nativeInstallCheckInputs = [ versionCheckHook ];
@@ -30,7 +37,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
   # tests segfault on darwin
   doCheck = !stdenv.hostPlatform.isDarwin;
 
-  passthru.updateScript = ./update.sh;
+  passthru.updateScript = nix-update-script { };
 
   meta = {
     description = "Secure artifact distribution for Radicle";

@@ -8,7 +8,7 @@
 
 buildPythonPackage (finalAttrs: {
   pname = "comfyui-frontend-package";
-  version = "1.55.18";
+  version = "1.58.5";
   pyproject = true;
 
   # nixpkgs-update: no auto update
@@ -16,7 +16,7 @@ buildPythonPackage (finalAttrs: {
   src = fetchPypi {
     pname = "comfyui_frontend_package";
     inherit (finalAttrs) version;
-    hash = "sha256-sxK3CTFrDEUk8VeJ4aIjgtp9QOgyFOf4iXloZTK2Z+Y=";
+    hash = "sha256-9AdZkklHHi48hQhDWPKT8z0L/4pZ4vKm4m1jiAImjew=";
   };
 
   build-system = [ setuptools ];

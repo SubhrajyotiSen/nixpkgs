@@ -3,12 +3,14 @@
   lib,
   nix-update-script,
   rustPlatform,
+  pkg-config,
+  aws-lc,
   versionCheckHook,
 }:
 
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "scalable-cli";
-  version = "1.2.0";
+  version = "1.3.0";
 
   __structuredAttrs = true;
 
@@ -16,10 +18,10 @@ rustPlatform.buildRustPackage (finalAttrs: {
     owner = "ScalableCapital";
     repo = "scalable-cli";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-I3M0gYJojhPEF709DBFfrtQr1HgmBrQIlQrh+325Yng=";
+    hash = "sha256-hK+4cBnwFsP3rjVnkR1+SQtCf1hE8a+QeowWKX1m7E4=";
   };
 
-  cargoHash = "sha256-3790d4hzLQdNzTgmq+w5kMaIlK/qINzyKMQAQd78Eog=";
+  cargoHash = "sha256-QZKy/W75y6yeBRg0CkYEfx0aawK0xirICiucE1SBt8Y=";
 
   buildFeatures = [ "channel-prod" ];
 
@@ -29,6 +31,10 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   nativeInstallCheckInputs = [ versionCheckHook ];
   doInstallCheck = true;
+
+  nativeBuildInputs = [ pkg-config ];
+
+  buildInputs = [ aws-lc ];
 
   passthru = {
     updateScript = nix-update-script { };

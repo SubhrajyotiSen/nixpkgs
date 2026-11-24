@@ -9,6 +9,8 @@
   nodejs,
   makeBinaryWrapper,
   installShellFiles,
+  jq,
+  moreutils,
   autoPatchelfHook,
   patchelfUnstable,
   cacert,
@@ -19,7 +21,7 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "cf";
-  version = "1.0.0-beta.21";
+  version = "1.0.0-beta.32";
 
   __structuredAttrs = true;
   strictDeps = true;
@@ -28,7 +30,7 @@ stdenv.mkDerivation (finalAttrs: {
     owner = "cloudflare";
     repo = "cf";
     tag = "cf@${finalAttrs.version}";
-    hash = "sha256-KlNsEzd4dxNBKUtcD8XiFLbAbOluq6PB5vB+pRcJ+mo=";
+    hash = "sha256-6ik19YeOjF1wUp+61832dg1/UBRwKYE0UTcZvuLKFco=";
   };
 
   pnpmWorkspaces = [ "cf" ];
@@ -41,10 +43,8 @@ stdenv.mkDerivation (finalAttrs: {
       pnpmWorkspaces
       ;
     pnpm = pnpm_12;
-    fetcherVersion = 4;
-    # Avoid pnpm's macOS clone probe leaving v11/links in the dependency archive.
-    pnpmInstallFlags = [ "--package-import-method=copy" ];
-    hash = "sha256-+AIVKXMs2J62/VrwdMqqIGBjjvlXq2xAY02POQRSne0=";
+    fetcherVersion = 5;
+    hash = "sha256-ZAA8UPS3mlxla7JcWacueXUCPRzXcfj8cs0LIBkQcXg=";
   };
 
   nativeBuildInputs = [
@@ -53,6 +53,8 @@ stdenv.mkDerivation (finalAttrs: {
     pnpmConfigHook
     makeBinaryWrapper
     installShellFiles
+    jq
+    moreutils
   ]
   ++ lib.optionals stdenv.hostPlatform.isLinux [
     autoPatchelfHook
@@ -79,6 +81,11 @@ stdenv.mkDerivation (finalAttrs: {
     mkdir -p $out/bin
     pnpm config set --location=project injectWorkspacePackages true
     pnpm --filter cf --prod deploy $out/lib/cf
+    # pnpm deploy writes these in a nondeterministic order. The workspace
+    # file only holds build settings and is not read at runtime.
+    rm $out/lib/cf/pnpm-workspace.yaml
+    jq '.dependencies |= (to_entries | sort_by(.key) | from_entries)' \
+      $out/lib/cf/package.json | sponge $out/lib/cf/package.json
     # Replace workerd's postinstall copy with a link to its platform package.
     for workerd in $out/lib/cf/node_modules/.pnpm/workerd@*/node_modules/workerd; do
       ln -sfr "$workerd"/../@cloudflare/workerd-*/bin/workerd "$workerd/bin/workerd"
@@ -138,7 +145,10 @@ stdenv.mkDerivation (finalAttrs: {
       mit
       asl20
     ];
-    maintainers = with lib.maintainers; [ connornelson ];
+    maintainers = with lib.maintainers; [
+      connornelson
+      philiptaron
+    ];
     mainProgram = "cf";
     # The CLI is built from source; npm supplies native binaries and WASM.
     sourceProvenance = with lib.sourceTypes; [

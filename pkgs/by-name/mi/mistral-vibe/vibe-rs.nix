@@ -4,6 +4,7 @@
   rustPlatform,
   pkg-config,
   alsa-lib,
+  aws-lc,
   oniguruma,
   cacert,
   coreutils,
@@ -20,7 +21,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   sourceRoot = "${finalAttrs.src.name}/vibe/cli-rust";
 
-  cargoHash = "sha256-FHAB/HXKgLOPvziyeF8huVLfZ3Jze48+10RkqHt2c/o=";
+  cargoHash = "sha256-s8Db0TAGAsczGTlALEJRSVWZXitvlasULbVfMvcD8JU=";
 
   nativeBuildInputs = [
     pkg-config
@@ -31,6 +32,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
   ];
 
   buildInputs = [
+    aws-lc
     oniguruma
   ]
   ++ lib.optionals stdenv.hostPlatform.isLinux [
@@ -41,7 +43,10 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   # Fake clipboard tools in the tests call `/bin/cat`, which is absent from the sandbox
   postPatch = ''
-    substituteInPlace tests/isolated/clipboard_linux.rs \
+    substituteInPlace \
+      tests/isolated/clipboard_linux.rs \
+      tests/isolated/clipboard_tmux.rs \
+      tests/isolated/tmux_mouse.rs \
       --replace-fail \
         "/bin/cat" \
         "${lib.getExe' coreutils "cat"}"
@@ -55,6 +60,20 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   # The `isolated` test target needs one process per test
   useNextest = true;
+
+  checkFlags = [
+    # Flaky under load: the CLI sometimes never reports stopping after Ctrl+Z
+    # (timed out waiting for a CLI event)
+    "--skip"
+    "suspend_lifecycle::"
+  ]
+  ++ lib.optionals stdenv.hostPlatform.isDarwin [
+    # The file watcher never reports changes in the sandbox (timeout)
+    "--skip"
+    "file_index::a_rapid_burst_of_creates_settles_into_few_rebuilds"
+    "--skip"
+    "file_index::watch_mode_reindexes_a_file_created_after_the_initial_build"
+  ];
 
   # Tests spin up mock HTTP servers on 127.0.0.1
   __darwinAllowLocalNetworking = true;

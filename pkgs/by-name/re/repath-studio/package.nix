@@ -60,13 +60,13 @@ let
 in
 buildNpmPackage (finalAttrs: {
   pname = "repath-studio";
-  version = "0.4.27";
+  version = "0.4.29";
 
   src = fetchFromGitHub {
     owner = "repath-studio";
     repo = "repath-studio";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-Jjx5vz7k6koSftw3oPHHAWVjwz+wZ1Jdc3cLZcmbjHI=";
+    hash = "sha256-DRlJ0Bjz02C9J/IDaMhb9f67Lh0c5mdtLMVFSJ3tfX8=";
   };
 
   patches = [
@@ -82,7 +82,7 @@ buildNpmPackage (finalAttrs: {
 
   makeCacheWritable = true;
 
-  npmDepsHash = "sha256-l43osku0AiJo1s8x4ze/SFO1L2G/rN0Iw4A+tv7+zc4=";
+  npmDepsHash = "sha256-BSM/iQH70EVBk1N4824yZEVT9gAxH0W0HKYMQjl7KdI=";
 
   nativeBuildInputs = [
     finalAttrs.passthru.clojureWithHome
@@ -259,7 +259,7 @@ buildNpmPackage (finalAttrs: {
 
       dontFixup = true;
 
-      outputHash = "sha256-Q9O7vZtpxL/JaV2gVNdmZJg3X4uJoUNFdrnDCZF/KUs=";
+      outputHash = "sha256-27DpHr8HxXU4QrGe1k09qiPNm3FsC9g5gkqn2Dqdv0U=";
       outputHashMode = "recursive";
       outputHashAlgo = "sha256";
     };

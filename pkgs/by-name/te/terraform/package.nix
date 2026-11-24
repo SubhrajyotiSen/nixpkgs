@@ -1,30 +1,32 @@
 {
   stdenv,
   lib,
-  buildGo127Module,
+  buildGoModule,
   fetchFromGitHub,
   makeWrapper,
   runCommand,
   runtimeShell,
+  versionCheckHook,
+  writableTmpDirAsHomeHook,
   writeText,
   terraform-providers,
   installShellFiles,
 }:
 
 let
-  package = buildGo127Module rec {
+  package = buildGoModule rec {
     pname = "terraform";
-    version = "1.17.0";
+    version = "1.17.2";
 
     src = fetchFromGitHub {
       owner = "hashicorp";
       repo = "terraform";
-      rev = "v${version}";
-      hash = "sha256-1TcZrcpIU14lnS0yD0kqJEKkp9M/1+c3+3jEPWP/Xdw=";
+      tag = "v${version}";
+      hash = "sha256-3BAhqhFJISNV4d6tFDim2lx2um/wpfOhCd8+nVtyOsk=";
     };
 
     proxyVendor = true; # darwin/linux hash mismatch
-    vendorHash = "sha256-0QVv6uLejijAjJJRMjvqvWXHVM2iIWOmhpf6IS79e+0=";
+    vendorHash = "sha256-u+Ydn08/+9xLXVOiUFI5C/XlCk9LUsO668nlR5jVXtQ=";
 
     patches = [
       ./provider-path-0_15.patch
@@ -45,17 +47,6 @@ let
       "-X 'github.com/hashicorp/terraform/version.dev=no'"
     ];
 
-    postPatch = ''
-      # Between go 1.23 and 1.24 the following GODEBUG setting was removed, and a new
-      # similar one was added.
-      # https://github.com/golang/go/issues/72111
-      # The setting is configured upstream due to the following timeouts caused by
-      # the TLS handshake using post-quantum crypto with servers that don't support it
-      # https://tldr.fail/
-      substituteInPlace go.mod \
-        --replace-quiet 'godebug tlskyber=0' 'godebug tlsmlkem=0'
-    '';
-
     nativeBuildInputs = [ installShellFiles ];
 
     postInstall = ''
@@ -63,10 +54,15 @@ let
       installShellCompletion --bash --name terraform <(echo complete -C terraform terraform)
     '';
 
-    preCheck = ''
-      export HOME=$TMPDIR
-      export TF_SKIP_REMOTE_TESTS=1
-    '';
+    __darwinAllowLocalNetworking = true;
+
+    nativeCheckInputs = [
+      writableTmpDirAsHomeHook
+      versionCheckHook
+    ];
+
+    doInstallCheck = true;
+    versionCheckProgramArg = "version";
 
     subPackages = [ "." ];
 

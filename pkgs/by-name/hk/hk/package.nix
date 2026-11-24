@@ -9,6 +9,7 @@
   pkg-config,
   pkl,
   python3,
+  aws-lc,
   libgit2,
   openssl,
   cacert,
@@ -19,7 +20,7 @@
 
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "hk";
-  version = "2.8.1";
+  version = "2.13.0";
 
   __structuredAttrs = true;
 
@@ -27,10 +28,10 @@ rustPlatform.buildRustPackage (finalAttrs: {
     owner = "jdx";
     repo = "hk";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-LTF9bklF2bqqhTpgXQ/SSeZuoWALTOXXi3bmBvX0PHM=";
+    hash = "sha256-HaK3vVE2ETdVkg9nhujJoWKh3ouZjli4Ol7lOxRqYZE=";
   };
 
-  cargoHash = "sha256-l7BJvy4jtJAoNIVFCLZnPxqA6W6lPAHhXbY4j9E3eNo=";
+  cargoHash = "sha256-qlARVJhHrE4oDBQo0RIAd3n/bjJDMbEWogcN/9ziok8=";
 
   nativeBuildInputs = [
     installShellFiles
@@ -40,6 +41,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
   ];
 
   buildInputs = [
+    aws-lc
     libgit2
     openssl
   ];

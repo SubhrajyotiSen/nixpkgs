@@ -4,6 +4,7 @@
   fetchFromGitHub,
   pkg-config,
   installShellFiles,
+  aws-lc,
   bzip2,
   openssl,
   xz,
@@ -16,16 +17,16 @@
 
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "espup";
-  version = "0.18.0";
+  version = "0.19.0";
 
   src = fetchFromGitHub {
     owner = "esp-rs";
     repo = "espup";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-1u7gayph6PTvm3FE1XXIsTGzS5P/39h+mVxPlkN7IQs=";
+    hash = "sha256-mNpOaiAcNoVRiKtHcyYKS9RA0cYTR2ImOLauSAcgBHI=";
   };
 
-  cargoHash = "sha256-SlCdCio76Ahyh5HkGAUc10hkWzt3efhNpOIYfFJ/tEM=";
+  cargoHash = "sha256-Oicd+7lvXuYmTYt/QqswuEm7TQUCwtlD8yWllmi/ZoE=";
 
   nativeBuildInputs = [
     pkg-config
@@ -33,6 +34,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
   ];
 
   buildInputs = [
+    aws-lc
     bzip2
     openssl
     xz

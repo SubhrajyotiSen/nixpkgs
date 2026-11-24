@@ -27,13 +27,13 @@ stdenv.mkDerivation (finalAttrs: {
   __structuredAttrs = true;
   strictDeps = true;
   pname = "mango";
-  version = "0.18.4";
+  version = "0.18.6";
 
   src = fetchFromGitHub {
     owner = "mangowm";
     repo = "mango";
     tag = finalAttrs.version;
-    hash = "sha256-0MRMHabwVDRG52oLuAFnlPXKtSnuuTDy4ws2mXq1fjg=";
+    hash = "sha256-uT+hrOc3TJgsYlzWp8eFjkEmtlqVd2fAddWEjORc2cY=";
   };
 
   nativeBuildInputs = [
@@ -80,8 +80,8 @@ stdenv.mkDerivation (finalAttrs: {
     license = lib.licenses.gpl3Plus;
     maintainers = with lib.maintainers; [
       hustlerone
+      ryand56
       samiser
-      yvnth
     ];
     platforms = lib.platforms.linux;
   };

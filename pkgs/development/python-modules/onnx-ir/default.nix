@@ -28,7 +28,6 @@ buildPythonPackage (finalAttrs: {
   pname = "onnx-ir";
   version = "1.1.0";
   pyproject = true;
-  __structuredAttrs = true;
 
   src = fetchFromGitHub {
     owner = "onnx";
@@ -72,6 +71,11 @@ buildPythonPackage (finalAttrs: {
 
     # Circular dependency with onnxscript
     "test_correct_module_name"
+
+    # AssertionError: BufferError not raised
+    # ml-dtypes>=0.7.0 registers its types with NumPy's DLPack support
+    "test_tensor_proto_tensor_bfloat16"
+    "test_tensor_proto_tensor_float8"
   ];
 
   disabledTestPaths = [

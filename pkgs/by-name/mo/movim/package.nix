@@ -1,6 +1,7 @@
 {
   lib,
   fetchFromGitHub,
+  fetchpatch2,
   writers,
   dash,
   shellcheck-minimal,
@@ -21,11 +22,11 @@ let
   defaultMinifyOpts = {
     script = {
       enable = false;
-      target = "es2020";
+      target = "es2022";
     };
     style = {
       enable = false;
-      browserslist = "defaults, Firefox ESR, Firefox 91, last 20 Firefox major versions, last 20 Chrome major versions, last 3 Safari major versions, last 1 KaiOS version, and supports css-variables";
+      browserslist = "defaults, Firefox ESR, Firefox 141, last 20 Firefox major versions, last 20 Chrome major versions, last 3 Safari major versions, last 1 KaiOS version, and supports css-variables";
     };
     svg = {
       enable = false;
@@ -62,14 +63,25 @@ let
 in
 php.buildComposerProject2 (finalAttrs: {
   pname = "movim";
-  version = "0.35.2";
+  version = "0.35.5";
 
   src = fetchFromGitHub {
     owner = "movim";
     repo = "movim";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-rHPJYz8zjzUmKFEuSZU76LReZfUA1YCQL1f4fHn/2p4=";
+    hash = "sha256-YDXEdhtubI0ZGUwiRoCe+Wh4ieHOMmUODs3waE7xb0U=";
   };
+
+  patches = [
+    # > Remove the cached post display before retrieving it from the XMPP
+    # > network, the whole flow will be refactored later
+    #
+    # fixes CVE-2026-125379
+    (fetchpatch2 {
+      url = "https://github.com/movim/movim/commit/378e0368368d0dd9cb090b78e68a63064d47d512.patch";
+      hash = "sha256-f+rcgwbbNaXNcQ8w4bfBNTkRkcnCNu0/Pvsyv7dK6c0=";
+    })
+  ];
 
   php = php.buildEnv (
     {
@@ -127,7 +139,7 @@ php.buildComposerProject2 (finalAttrs: {
     nativeBuildInputs = [ gitMinimal ];
   };
 
-  vendorHash = "sha256-K2DM+VO4mL1U4q5rv9JgAmdqmaVcFO4KBj41dNBwVME=";
+  vendorHash = "sha256-kExcDTbez7xmnGZQIwcul47JFwiU7A/RjwUj2G4nfwk=";
 
   postPatch = ''
     # Our modules are already wrapped, removes missing *.so warnings;

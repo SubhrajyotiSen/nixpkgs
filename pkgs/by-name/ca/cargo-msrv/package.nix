@@ -4,8 +4,7 @@
   fetchFromGitHub,
   pkg-config,
   rustup,
-  openssl,
-  stdenv,
+  aws-lc,
   makeWrapper,
   nix-update-script,
 }:
@@ -30,7 +29,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
   # Integration tests fail
   doCheck = false;
 
-  buildInputs = lib.optionals stdenv.hostPlatform.isLinux [ openssl ];
+  buildInputs = [ aws-lc ];
 
   nativeBuildInputs = [
     pkg-config
@@ -46,10 +45,12 @@ rustPlatform.buildRustPackage (finalAttrs: {
     description = "Cargo subcommand \"msrv\": assists with finding your minimum supported Rust version (MSRV)";
     mainProgram = "cargo-msrv";
     homepage = "https://github.com/foresterre/cargo-msrv";
-    license = with lib.licenses; [
-      asl20 # or
-      mit
-    ];
+    license =
+      with lib.licenses;
+      OR [
+        asl20
+        mit
+      ];
     maintainers = with lib.maintainers; [
       otavio
       matthiasbeyer

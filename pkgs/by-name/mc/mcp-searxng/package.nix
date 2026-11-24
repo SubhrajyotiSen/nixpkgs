@@ -6,7 +6,7 @@
 
 buildNpmPackage (finalAttrs: {
   pname = "mcp-searxng";
-  version = "2.9.0";
+  version = "2.10.1";
 
   __structuredAttrs = true;
   strictDeps = true;
@@ -15,10 +15,10 @@ buildNpmPackage (finalAttrs: {
     owner = "ihor-sokoliuk";
     repo = "mcp-searxng";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-RJlkXTykvgShS17YC2l4s7xBGeMW6Dq1aTfVgtC2SMA=";
+    hash = "sha256-G//lss5dxvSQsW6a6kncXyoKXFFLZEjtPKoUJ7giqL8=";
   };
 
-  npmDepsHash = "sha256-nSjC643nK3MFWN88oeRixD82rxDo+gPHjCShxymyMyY=";
+  npmDepsHash = "sha256-B01O3v4z8liEoXdHhGM13RjWJOCrsNGbo/nWVPnJiho=";
 
   meta = {
     description = "Private web search for AI assistants via SearXNG — supports Claude, Cursor, and any MCP client";

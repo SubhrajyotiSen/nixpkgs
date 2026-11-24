@@ -17,16 +17,16 @@
 }:
 stdenv.mkDerivation (finalAttrs: {
   pname = "dashy-ui";
-  version = "4.9.8";
+  version = "4.9.19";
   src = fetchFromGitHub {
     owner = "lissy93";
     repo = "dashy";
     tag = finalAttrs.version;
-    hash = "sha256-Gvb53iEplqiixa1Cf/F1d12YzUa7PTWzNRxbR84ulaA=";
+    hash = "sha256-2bKtOw2zw57mVwtbfThVXFEpJd9nssOuzjLTCv+J6Gg=";
   };
   yarnOfflineCache = fetchYarnDeps {
     yarnLock = finalAttrs.src + "/yarn.lock";
-    hash = "sha256-2iW6+OsE6lN/d9fNbaCqxvfpSpn7V8BWmCr9x/GVrpE=";
+    hash = "sha256-tEk0nvNhcCwTg2Mw1mZ/Q6r40Gj+nJt4r6qVui2XsnM=";
   };
 
   passthru = {
@@ -42,7 +42,7 @@ stdenv.mkDerivation (finalAttrs: {
   # Config validation needs to happen after yarnConfigHook, since it's what sets the yarn offline cache
   preBuild = lib.optionalString (settings != { }) ''
     echo "Writing settings override..."
-    json2yaml '${builtins.toFile "conf.json" (builtins.toJSON settings)}' user-data/conf.yml
+    json2yaml --width inf '${builtins.toFile "conf.json" (builtins.toJSON settings)}' user-data/conf.yml
     yarn validate-config --offline
   '';
   installPhase = ''

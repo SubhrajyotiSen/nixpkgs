@@ -6,24 +6,27 @@
   rustPlatform,
   versionCheckHook,
   nix-update-script,
+  cacert,
 }:
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "flux9s";
-  version = "1.4.5";
+  version = "1.5.4";
   __structuredAttrs = true;
 
   src = fetchFromGitHub {
     owner = "dgunzy";
     repo = "flux9s";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-Y1hj2zsIfTuqSS0mS2Zk4MOpU9LBM1uycY+9zHNPgdM=";
+    hash = "sha256-x/klXGQm6sLhLayv0B7spEt/m5N1p/hoP/Rm+jfx+YM=";
   };
 
-  cargoHash = "sha256-jh+vzDufuF7dteDIuMF/8gRp5jIZy4m0HHSwJBAyJLE=";
+  cargoHash = "sha256-3E3Y2cgVd5DcYc7UxOPpkREw6Gxhu8ayGUPibT/LeOs=";
 
   nativeBuildInputs = [ pkg-config ];
 
   buildInputs = [ openssl ];
+
+  nativeCheckInputs = [ cacert ];
 
   nativeInstallCheckInputs = [ versionCheckHook ];
   doInstallCheck = true;

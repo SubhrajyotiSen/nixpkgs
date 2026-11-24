@@ -24,21 +24,22 @@
   blueprint-compiler,
   glycin-loaders,
   libglycin,
+  aws-lc,
 }:
 stdenv.mkDerivation (finalAttrs: {
   pname = "tsukimi";
-  version = "26.10.1";
+  version = "26.11.1";
 
   src = fetchFromGitHub {
     owner = "tsukinaha";
     repo = "tsukimi";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-j5qiZ4v0TTwEu8l112O9sAXGo9LDaWnzRkte+IHo+50=";
+    hash = "sha256-GZ90FVYTD1OEWbCFB5zxTe9vGkHDDrStSYtznWgp8Zc=";
   };
 
   cargoDeps = rustPlatform.fetchCargoVendor {
     inherit (finalAttrs) pname version src;
-    hash = "sha256-ukE/5/jFP7sR5WaWg3zYMPyA3/4IKaUfVYpmfhqAFkk=";
+    hash = "sha256-VxEaJb4ovfc+08NWkXLRHHa22LJcDGdUhFQZa1cBG1c=";
   };
 
   nativeBuildInputs = [
@@ -65,6 +66,7 @@ stdenv.mkDerivation (finalAttrs: {
     dbus
     libglycin
     glycin-loaders
+    aws-lc
   ]
   ++ (with gst_all_1; [
     gstreamer

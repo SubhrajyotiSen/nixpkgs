@@ -33,18 +33,15 @@
 
 stdenv.mkDerivation {
   pname = "tg_owt";
-  version = "0-unstable-2026-10-13";
+  version = "0-unstable-2026-11-11";
 
   src = fetchFromGitHub {
     owner = "desktop-app";
     repo = "tg_owt";
-    rev = "07fb35bc33b3e79125a1beab7690e830f183f5d8";
-    hash = "sha256-yQYIfDvwuX5vEnutqZlR7sBZvTkjC6/D9btE+X86+B4=";
+    rev = "c309069c2e70e2e149d600f72e86c37bb1f8b492";
+    hash = "sha256-uh0H9HVUuS8Lu1KQWgqSXEdcU2Rzs6beByJ14A7nOEg=";
     fetchSubmodules = true;
   };
-
-  patches = [
-  ];
 
   postPatch = lib.optionalString stdenv.hostPlatform.isLinux ''
     substituteInPlace src/modules/desktop_capture/linux/wayland/egl_dmabuf.cc \
